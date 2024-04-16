@@ -1,5 +1,5 @@
 REM Activation of the virtual environment
-.venv/Scripts/activate.bat
+call .venv\Scripts\activate
 
 REM Start the server
 cd Mapocalipse
