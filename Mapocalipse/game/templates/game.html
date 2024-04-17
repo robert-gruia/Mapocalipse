@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- css imports -->
+    {% block css %} {% endblock %}
+    <!-- js defer imports -->
+    {% block jsdefer%} {% endblock%}
+    <title>{% block title %} {% endblock %}</title>
+</head>
+<body>
+
+    <header>
+        <!-- header content -->
+        {% block header %}
+        {% endblock %}
+    </header>
+
+    <!-- body content -->
+    {% block content %}
+    {% endblock %}
+
+    <!-- js imports -->
+    {% block js %}
+    {% endblock %}
+    <footer>
+        <!-- footer content -->
+        {% block footer %}
+        {% endblock %}
+    </footer>
+</body>
+</html>

@@ -3,16 +3,28 @@ from django.db import models
 from .utils import hash_password
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, username, email, first_name, last_name, password=None):
-        if not email:
-            raise ValueError('The Email field must be set')
-        if password is None:
-            raise ValueError('The Password field must be set')
+    #creates a user
+    def create_user(self, username, email, first_name, last_name, password):
+        
+        fields = {
+            'Email': email,
+            'Password': password,
+            'Username': username,
+            'First Name': first_name,
+            'Last Name': last_name
+        }
+
+        missing_fields = [field for field, value in fields.items() if not value]
+
+        if missing_fields:
+            raise ValueError(f'The following fields must be set: {", ".join(missing_fields)}')
+        
         email = self.normalize_email(email)
         user = self.model(username=username, email=email, first_name=first_name, last_name=last_name, password=hash_password(password))
         user.save(using=self._db)
         return user
 
+    #creates a superuser
     def create_superuser(self, username, email, password=None):
         user = self.create_user(username, email, password)
         user.is_superuser = True
@@ -28,11 +40,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     is_anonymous = False
 
+    #customized user manager
     objects = CustomUserManager()
 
     REQUIRED_FIELDS = ['email']
     USERNAME_FIELD = 'username'
 
-
+    #defines what table is uused by the model
     class Meta:
         db_table = 'users' 
