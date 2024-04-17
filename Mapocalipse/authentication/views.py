@@ -31,9 +31,7 @@ def register(request):
         if User.objects.filter(username=username).exists():
             return render(request, 'register.html', {'error': 'Username already exists'})
         else:
-            user = User(username=username, email=email, first_name=firstname, last_name=lastname)
-            user.password = hash_password(password)
-            user.save()
+            user = User.objects.create_user(username=username, email=email, first_name=firstname, last_name=lastname, password=password)
             login(request, user)
             return redirect('/map/')
     else:
