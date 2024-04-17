@@ -24,5 +24,6 @@ urlpatterns = [
     #default path -> redirects to login page
     path('', RedirectView.as_view(url='/authentication/login/')),
     #authentication handler app path and its urls
-    path('authentication/', include('authentication.urls')),
+    path('authentication/', include(('authentication.urls', 'authentication'), namespace='authentication')),
+    path('game/', include(('game.urls', 'game'), namespace='game')),
 ]
