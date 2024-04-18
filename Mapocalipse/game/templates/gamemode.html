@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- css imports -->
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- css imports -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'game/css/gamemodeStyle.css' %}">
     {% block css %} {% endblock %}
     <!-- js defer imports -->
+    <script type="module" src="{% static 'game/js/gamemodeScript.js' %}" defer></script>
     {% block jsdefer%} {% endblock%}
     <title>{% block title %} {% endblock %}</title>
 </head>
@@ -20,6 +23,8 @@
     <!-- body content -->
     {% block content %}
     {% endblock %}
+
+    
 
     <!-- js imports -->
     {% block js %}
