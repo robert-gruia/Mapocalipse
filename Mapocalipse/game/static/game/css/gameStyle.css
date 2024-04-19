@@ -1,0 +1,31 @@
+/* 
+ * Always set the map height explicitly to define the size of the div element
+ * that contains the map. 
+ */
+ #map {
+    height: 35%;
+    width: 35%;
+    position: absolute;
+    top: 80%;
+    left: 78%;
+    transform: translate(-50%, -50%);
+    z-index: 1; 
+}
+
+#mappano,
+#pano {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+}
+
+/* 
+* Optional: Makes the sample page fill the window. 
+*/
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
