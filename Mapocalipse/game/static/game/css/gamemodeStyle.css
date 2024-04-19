@@ -192,6 +192,7 @@ img {
   }
   .card__img {
     width: 400px;
+    max-height: 220px;
   }
   .card__data {
     width: 380px;

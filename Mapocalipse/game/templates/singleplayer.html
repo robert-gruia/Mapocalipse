@@ -1,7 +1,8 @@
-{% extends 'gamemode.html'%}
+{% extends 'gamemode.html' %}
 {% load static %}
 
 {% block title %} Singleplayer {% endblock %}
+
 
 {% block content %}
 <div class="gamemodes">
@@ -23,6 +24,15 @@
                 <div class="card__data">
                     <h2 class="card__title">Time Limit Mode</h2>
                     <span class="card__description">You want a more challenging game mode? Then this is the right choice!</span>
+                    <a href="" class="card__button">Play</a>
+                </div>
+            </article>
+            <article class="card__article">
+                <img src="{% static 'game/imgs/italy.jpg' %}" alt="image" class="card__img">
+ 
+                <div class="card__data">
+                    <h2 class="card__title">Italy</h2>
+                    <span class="card__description">Embark in your beautiful journey in Italy! You'll see all from the Sicily island in the south to the Alps in the north. </span>
                     <a href="" class="card__button">Play</a>
                 </div>
             </article>
