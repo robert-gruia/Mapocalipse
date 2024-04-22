@@ -1,4 +1,5 @@
 let map;
+let marker;
 let panoMap;
 
 const boundingBoxes = [
@@ -51,15 +52,25 @@ function getRandomArbitrary() {
 }
 
 function initMap() {
-  map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: 0, lng: 0 },
-    zoom: 2,
-  });
+  console.log('mapping map')
+  map = createMap(document.getElementById("map"), { lat: 0, lng: 0 }, 2, "4e6fe42e5a3ab531");
   
-  panoMap = new google.maps.Map(document.getElementById("panomap"), {
-    center: { lat: 0, lng: 0 },
-    zoom: 2,
+
+  map.addListener("click", async function(e) {
+    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+    if (marker) {
+      marker.setMap(null);
+    }
+
+    marker = new AdvancedMarkerElement({
+      position: e.latLng,
+      map: map,
+    });
   });
+
+
+  panoMap = createMap(document.getElementById("panomap"), { lat: 0, lng: 0 }, 2);
 
   const svService = new google.maps.StreetViewService();
 
@@ -67,7 +78,6 @@ function initMap() {
     const randomLocation = getRandomArbitrary();
     svService.getPanorama({ location: randomLocation, radius: 60000 }, (data, status) => {
       if (status === 'OK') {
-        console.log(data.location.latLng.toString());
         const panorama = new google.maps.StreetViewPanorama(document.getElementById("pano"), {
           position: data.location.latLng,
           pov: {
@@ -76,7 +86,6 @@ function initMap() {
           },
         });
         panoMap.setStreetView(panorama);
-        console.log(panoMap);
         panoMap.setCenter(data.location.latLng);
       } else {
         console.log('No panorama found');
@@ -89,5 +98,6 @@ function initMap() {
 }
 
 window.loadGoogleMapsApi().then(initMap).catch(console.error);
+
 
 
