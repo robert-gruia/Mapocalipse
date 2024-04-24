@@ -22,7 +22,7 @@ urlpatterns = [
     #admin page path -> do not access, only admin purposes
     path('admin/', admin.site.urls),
     #default path -> redirects to login page
-    path('', RedirectView.as_view(url='/authentication/login/')),
+    path('', RedirectView.as_view(url='/game/game/')),
     #authentication handler app path and its urls
     path('authentication/', include(('authentication.urls', 'authentication'), namespace='authentication')),
     path('game/', include(('game.urls', 'game'), namespace='game')),
