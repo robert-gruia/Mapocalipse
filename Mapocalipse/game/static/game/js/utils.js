@@ -50,25 +50,43 @@ const boundingBoxes = [
     size: (box.lat[1] - box.lat[0]) * (box.lng[1] - box.lng[0]),
 }));
 
-function getRandomArbitrary() {
-    // Calculate the total size of all bounding boxes
-    const totalSize = boundingBoxes.reduce((total, box) => total + box.size, 0);
+let cumulativeSizes = [];
+let totalSize = 0;
 
+for (const box of boundingBoxes) {
+    totalSize += box.size;
+    cumulativeSizes.push(totalSize);
+}
+
+function getRandomArbitrary() {
     // Select a random bounding box, weighted by size
     let random = Math.random() * totalSize;
-    let box;
-    for (const b of boundingBoxes) {
-        if (random < b.size) {
-            box = b;
-            break;
-        }
-        random -= b.size;
-    }
+    let index = binarySearch(cumulativeSizes, random);
+    let box = boundingBoxes[index];
 
     // Generate a random point within the bounding box
     const lat = Math.random() * box.latSize + box.lat[0];
     const lng = Math.random() * box.lngSize + box.lng[0];
     return { lat, lng };
+}
+
+function binarySearch(array, value) {
+    let start = 0;
+    let end = array.length - 1;
+
+    while (start <= end) {
+        let middle = Math.floor((start + end) / 2);
+
+        if (array[middle] === value) {
+            return middle;
+        } else if (array[middle] < value) {
+            start = middle + 1;
+        } else {
+            end = middle - 1;
+        }
+    }
+
+    return start;
 }
 
 
@@ -100,4 +118,5 @@ function createButton(map, text, callback) {
     controlUI.addEventListener('click', callback);
 
     map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(controlDiv);
+    return controlUI;
 }

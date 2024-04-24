@@ -4,6 +4,7 @@ let randomLocationMarker;
 let randomLocation;
 let panoMap;
 let line;
+let isGuessable;
 
 function drawLine() {
   if (marker && randomLocationMarker) {
@@ -21,6 +22,12 @@ function drawLine() {
 
     line.setMap(map);
     calculateDistanceBetweenCoordinates(marker.position, randomLocation);
+  }
+}
+
+function removeLine() {
+  if (line) {
+    line.setMap(null);
   }
 }
 
@@ -44,8 +51,24 @@ async function initMap() {
     if (marker) {
       marker.setMap(null);
     }
-    else{
-      createButton(map, "Guess");
+
+    if (isGuessable){
+      let mapButton = createButton(map, "Guess", () => {
+        randomLocationMarker = new AdvancedMarkerElement({
+          position: randomLocation,
+          map: map,
+        });
+        drawLine();
+        let nextButton = createButton(map, "Next", () => {
+          isGuessable = false;
+          tryRandomLocation();
+          randomLocationMarker.setMap(null);
+          panoMap.setStreetView(null);
+          removeLine();
+          nextButton.remove();
+        });
+        mapButton.remove();
+      });
     }
 
     marker = new AdvancedMarkerElement({
@@ -59,10 +82,11 @@ async function initMap() {
   const svService = new google.maps.StreetViewService();
 
   const tryRandomLocation = () => {
+    isGuessable = false;
     randomLocation = getRandomArbitrary();
-    svService.getPanorama({ location: randomLocation, radius: 120000 }, async (data, status) => {
+    svService.getPanorama({ location: randomLocation, radius: 620000 }, async (data, status) => {
       if (status === 'OK') {
-        if (data.links.length > 1){
+        if (data.links.length > 1) {
           const panorama = new google.maps.StreetViewPanorama(document.getElementById("pano"), {
             position: data.location.latLng,
             pov: {
@@ -75,12 +99,15 @@ async function initMap() {
           });
           panoMap.setStreetView(panorama);
           panoMap.setCenter(data.location.latLng);
+          isGuessable = true;
         }
-        else{
-          setTimeout(tryRandomLocation, 250);
+        else {
+          console.log("No Street View data found for this location.");
+          setTimeout(tryRandomLocation, 100);
         }
       } else {
-        setTimeout(tryRandomLocation, 500);
+        console.log("No Street View data found for this location.");
+        setTimeout(tryRandomLocation, 100);
       }
     });
   };

@@ -29,6 +29,6 @@ def calculate_distance(request):
     point1 = (lat1, lng1)
     point2 = (lat2, lng2)
 
-    distance = geodesic(point1, point2).miles
+    distance = geodesic(point1, point2).kilometers
 
     return JsonResponse({'distance': distance})
