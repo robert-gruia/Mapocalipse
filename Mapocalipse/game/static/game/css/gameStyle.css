@@ -2,15 +2,16 @@
  * Always set the map height explicitly to define the size of the div element
  * that contains the map. 
  */
- #map {
+#map {
     height: 35%;
     width: 35%;
     position: absolute;
     top: 80%;
     left: 78%;
     transform: translate(-50%, -50%);
-    z-index: 1; 
+    z-index: 1;
 }
+
 
 #mappano,
 #pano {

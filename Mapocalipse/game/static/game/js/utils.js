@@ -4,6 +4,10 @@ async function calculateDistanceBetweenCoordinates(position1, position2) {
     const lat2 = position2.lat;
     const lng2 = position2.lng;
 
+    console.log(position1)
+    console.log(position2)
+    console.log(position1.lat, position1.lng, position2.lat, position2.lng)
+
     const response = await fetch('../calculate_distance/', {
         method: 'POST',
         headers: {

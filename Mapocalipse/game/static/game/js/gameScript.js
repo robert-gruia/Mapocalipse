@@ -103,14 +103,11 @@ async function initMap() {
           });
           panoMap.setStreetView(panorama);
           panoMap.setCenter(data.location.latLng);
-          randomLocation = data.location.latLng;
         }
         else {
-          console.log("No Street View data found for this location.");
           setTimeout(tryRandomLocation, 100);
         }
       } else {
-        console.log("No Street View data found for this location.");
         setTimeout(tryRandomLocation, 100);
       }
     });
