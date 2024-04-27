@@ -15,8 +15,17 @@ def multiplayer(request):
 def singleplayer(request):
     return render(request, 'singleplayer.html')    
 
-def game(request):
-    return render(request, 'game.html')
+
+def world(request):
+    return render(request, 'world.html')
+
+
+def timeLimit(request):
+    return render(request, 'timeLimit.html')
+
+
+def country(request, country):
+    return render(request, 'country.html', {'country': country})
 
 
 def calculate_distance(request):

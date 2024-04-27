@@ -4,7 +4,6 @@ let randomLocationMarker;
 let randomLocation;
 let panoMap;
 let line;
-let isGuessable;
 
 function drawLine() {
   if (marker && randomLocationMarker) {
@@ -13,7 +12,7 @@ function drawLine() {
     }
 
     line = new google.maps.Polyline({
-      path: [marker.position, randomLocationMarker.position],
+      path: [marker.position, randomLocation],
       geodesic: false,
       strokeColor: '#FF0000',
       strokeOpacity: 1.0,
@@ -52,24 +51,8 @@ async function initMap() {
       marker.setMap(null);
     }
 
-    if (isGuessable){
-      let mapButton = createButton(map, "Guess", () => {
-        randomLocationMarker = new AdvancedMarkerElement({
-          position: randomLocation,
-          map: map,
-        });
-        drawLine();
-        let nextButton = createButton(map, "Next", () => {
-          isGuessable = false;
-          tryRandomLocation();
-          randomLocationMarker.setMap(null);
-          panoMap.setStreetView(null);
-          removeLine();
-          nextButton.remove();
-        });
-        mapButton.remove();
-      });
-    }
+
+    mapButton.style.display = "block";
 
     marker = new AdvancedMarkerElement({
       position: e.latLng,
@@ -77,12 +60,33 @@ async function initMap() {
     });
   });
 
+
+  let mapButton = createButton(map, "Guess", () => {
+    randomLocationMarker = new AdvancedMarkerElement({
+      position: randomLocation,
+      map: map,
+    });
+    drawLine();
+    mapButton.style.display = "none";
+    nextButton.style.display = "block";
+  });
+  
+  let nextButton = createButton(map, "Next", () => {
+    isGuessable = false;
+    tryRandomLocation();
+    randomLocationMarker.setMap(null);
+    panoMap.setStreetView(null);
+    removeLine();
+    nextButton.style.display = "none";
+  });
+  
+  mapButton.style.display = "none";
+  nextButton.style.display = "none";
   panoMap = createMap(document.getElementById("panomap"), { lat: 0, lng: 0 }, 2);
 
   const svService = new google.maps.StreetViewService();
 
   const tryRandomLocation = () => {
-    isGuessable = false;
     randomLocation = getRandomArbitrary();
     svService.getPanorama({ location: randomLocation, radius: 620000 }, async (data, status) => {
       if (status === 'OK') {
@@ -99,7 +103,7 @@ async function initMap() {
           });
           panoMap.setStreetView(panorama);
           panoMap.setCenter(data.location.latLng);
-          isGuessable = true;
+          randomLocation = data.location.latLng;
         }
         else {
           console.log("No Street View data found for this location.");
