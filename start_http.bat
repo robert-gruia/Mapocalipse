@@ -1,3 +1,4 @@
+@echo off
 REM Activation of the virtual environment
 call .venv\Scripts\activate
 
