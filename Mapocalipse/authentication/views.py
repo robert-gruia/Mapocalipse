@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login as auth_login
 from .models import User
-from .utils import hash_password
+from .utils import hash_password, generateRandomCode
 
 
 def login(request):
@@ -27,16 +27,21 @@ def register(request):
         lastname = request.POST['lastname']
         username = request.POST['username']
         password = request.POST['password']
+        confirmPassword = request.POST['confirmpassword']
         email = request.POST['email']
-        # Add validation for the data here
-        if User.objects.filter(username=username).exists():
-            return render(request, 'register.html', {'error': 'Username already exists'})
-        else:
-            try:
-                user = User.objects.create_user(username=username, email=email, first_name=firstname, last_name=lastname, password=password)
-            except ValueError as ve:
-                return render(request, 'register.html', {'error': str(ve)})
-            auth_login(request, user)
-            return redirect('game:homepage')
+
+        if password != confirmPassword:
+            return render(request, 'login.html', {'error': 'Passwords do not match'})
+        
+        while True:
+            usercode = generateRandomCode(6)
+            if not User.objects.filter(usercode=usercode).exists():
+                break
+        try:
+            user = User.objects.create_user(username=username, email=email, first_name=firstname, last_name=lastname, password=password, usercode=usercode)
+        except ValueError as ve:
+            return render(request, 'login.html', {'error': str(ve)})
+        auth_login(request, user)
+        return redirect('game:homepage')
     else:
-        return render(request, 'register.html')
+        return render(request, 'login.html')

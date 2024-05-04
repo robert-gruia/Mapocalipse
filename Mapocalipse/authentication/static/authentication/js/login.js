@@ -1,20 +1,13 @@
-function register(){
-    document.querySelector('.login').style.display = 'none';
-    document.querySelector('.register').style.display = 'block';
-}
+$(document).ready(function() {
+    $('#_register').click(function(e) {
+        e.preventDefault();
+        $('.login').hide();
+        $('.register').show();
+    });
 
-function login(){
-    document.querySelector('.login').style.display = 'block';
-    document.querySelector('.register').style.display = 'none';
-}
-
-document.getElementById('_register').addEventListener('click', (event) =>{
-    event.preventDefault();
-    document.querySelector('.login').style.display = 'none';
-    document.querySelector('.register').style.display = 'block';
-});
-document.getElementById('_login').addEventListener('click', (event) =>{
-    event.preventDefault();
-    document.querySelector('.login').style.display = 'block';
-    document.querySelector('.register').style.display = 'none';
+    $('#_login').click(function(e) {
+        e.preventDefault();
+        $('.register').hide();
+        $('.login').show();
+    });
 });
