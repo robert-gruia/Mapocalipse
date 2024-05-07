@@ -17,7 +17,8 @@ Login
 
 {% block content %}
 <div class="login wrapper">
-    <form action="../login/">
+    <form action="../login/" method="POST">
+        {% csrf_token %}
         <h2>Login</h2>
         <div class="input-field">
             <input type="text" id="username" name="username" required>
@@ -35,7 +36,7 @@ Login
             <a href="#">Forgot password?</a>
         </div>
         <button type="submit">Log In</button>
-        <div class="register">
+        <div class="changer">
             <p>Don't have an account? <a href="" id="_register">Register</a></p>
         </div>
         {% if error %}
@@ -44,7 +45,8 @@ Login
     </form>
 </div>
 <div class="register wrapper" style="display:none;">
-    <form action="../register/">
+    <form action="../register/" method="POST">
+        {% csrf_token %}
         <h2>Regsiter</h2>
         <div class="input-field">
             <input type="text" id="firstname" name="firstname" required>
@@ -71,7 +73,7 @@ Login
             <label>Confirm Password</label>
         </div>
         <button type="submit">Register</button>
-        <div class="register">
+        <div class="changer">
             <p>Already have an account? <a href="" id="_login">Login</a></p>
         </div>
         {% if error %}

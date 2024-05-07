@@ -4,7 +4,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 let isTouchDevice = window.matchMedia('(hover: none)').matches;
 
-const elLinks = document.querySelectorAll('a');
+const elLinks = Array.from(document.querySelectorAll('a')).filter(el => !el.classList.contains('choice'));
 const elItems = document.querySelectorAll('li');
 if (!isTouchDevice) {
   elLinks.forEach(elLink => {
@@ -14,15 +14,25 @@ if (!isTouchDevice) {
 }
 
 elItems.forEach(elItem => {
+  const timeline = gsap.timeline({
+    scrollTrigger: {
+      once: true,
+      trigger: elItem,
+      start: "top bottom",
+      end: "top bottom",
+      toggleActions: "play none play play"
+    }
+  });
+
   if (isTouchDevice) {
-    titleFadeIn(elItem);
+    titleFadeIn(elItem, timeline);
   }
-  
+
   const bbox = elItem.getBoundingClientRect();
   if (bbox.bottom > 0 && bbox.top < window.innerHeight) {
     const elImage = elItem.querySelector('img');
     if (elImage.complete) {
-      gsap.to(elItem, {
+      timeline.to(elItem, {
         opacity: 1,
         duration: 0.5,
         ease: 'power1.out',
@@ -30,7 +40,7 @@ elItems.forEach(elItem => {
       });
     } else {
       elImage.addEventListener('load', () => {
-        gsap.to(elItem, {
+        timeline.to(elItem, {
           opacity: 1,
           duration: 0.5,
           ease: 'power1.out',
@@ -40,41 +50,27 @@ elItems.forEach(elItem => {
     }
     return;
   }
-  
-  gsap.from(elItem, {
+
+  timeline.from(elItem, {
     y: innerWidth > 960 ? 150 : 50,
     duration: 0.6,
     ease: "power2.out",
-    scrollTrigger: {
-      once: true,
-      trigger: elItem,
-      start: "top bottom",
-      end: "top bottom",
-      toggleActions: "play none play play"
-    }
   });
-  gsap.fromTo(elItem, {
+  timeline.fromTo(elItem, {
     opacity: 0
   }, {
     opacity: 1,
     duration: 0.6,
     ease: "power2.out",
-    scrollTrigger: {
-      once: true,
-      trigger: elItem,
-      start: "top bottom",
-      end: "top bottom",
-      toggleActions: "play none play play"
-    }
   });
 });
 
-function titleFadeIn (elItem) {
+function titleFadeIn (elItem, timeline) {
   const elTitle = elItem.querySelector('span');
   gsap.set(elTitle, {
     y: 0
   });
-  gsap.fromTo(elTitle, {
+  timeline.fromTo(elTitle, {
     opacity: 0
   }, {
     opacity: 1,
@@ -99,7 +95,7 @@ function onLinkEnter (elHoveredLink) {
     duration: 0.6,
     ease: 'power3.out'
   });
-  
+
   elLinks.forEach(elLink => {
     if (elLink === elHoveredLink) return;
     let x = (elLink.bbox.x - elHoveredLink.bbox.x) * 0.2;

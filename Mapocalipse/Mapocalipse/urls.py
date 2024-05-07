@@ -26,4 +26,6 @@ urlpatterns = [
     #authentication handler app path and its urls
     path('authentication/', include(('authentication.urls', 'authentication'), namespace='authentication')),
     path('game/', include(('game.urls', 'game'), namespace='game')),
+    path('singleplayer/', include(('singleplayer.urls', 'singleplayer'), namespace='singleplayer')),
+    path('multiplayer/', include(('multiplayer.urls', 'multiplayer'), namespace='multiplayer'))
 ]

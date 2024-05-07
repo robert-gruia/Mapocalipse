@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- css imports -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'singleplayer/css/navbarStyle.css' %}">
+    <link rel="stylesheet" href="{% static 'singleplayer/css/gamemodeStyle.css' %}">
+    {% block css %} {% endblock %}
+    <!-- js defer imports -->
+    <script type="module" src="{% static 'singleplayer/js/gamemodeScript.js' %}" defer></script>
+    {% block jsdefer%} {% endblock%}
+    <title>{% block title %} {% endblock %}</title>
+</head>
+<body>
+    {% include 'navbar.html'%}
+
+    <header>
+        <!-- header content -->
+        {% block header %}
+        {% endblock %}
+    </header>
+
+    <!-- body content -->
+    {% block content %}
+    {% endblock %}
+
+    
+
+    <!-- js imports -->
+    {% block js %}
+    {% endblock %}
+    <footer>
+        <!-- footer content -->
+        {% block footer %}
+        {% endblock %}
+    </footer>
+</body>
+</html>

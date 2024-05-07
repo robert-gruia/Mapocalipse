@@ -2,15 +2,54 @@
 <html>
 <head>
     <title>Mapocalipse</title>
+    <style>
+        @font-face {
+            font-family: 'Neo Sans';
+            src: url('path-to-your-fonts/NeoSans-Bold.woff2') format('woff2'),
+                 url('path-to-your-fonts/NeoSans-Bold.woff') format('woff');
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        body {
+            font-family: 'Neo Sans', sans-serif;
+            font-size: 24px; /* Adjust size as needed */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #000;
+        }
+
+        nav {
+            background: transparent;
+            text-align: center;
+        }
+
+        nav a {
+            color: #fff; /* Change this to the color you want */
+            text-decoration: none;
+            text-transform: uppercase;
+            margin: 10px 0;
+            display: block;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #f00; /* Change this to the color you want on hover */
+            transform: scale(1.1);
+        }
+    </style>
 </head>
 <body>
     <nav>
-        <a href="singleplayer/">Singleplayer</a> |
-        <a href="multiplayer/">Multiplayer</a> |
-        <a href="settings/">Settings</a> |
-        <a href="friends/">Friends</a> |
-        <a href="rankings/">Rankings</a> |
-        <a href="profile/">Profile</a> | 
+        <a href="../singleplayer/home/">Singleplayer</a>
+        <a href="../multiplayer/">Multiplayer</a>
+        <a href="settings/">Settings</a> 
+        <a href="friends/">Friends</a>
+        <a href="rankings/">Rankings</a>
+        <a href="profile/">Profile</a> 
         <a href="logout/">Logout</a>
     </nav>
 </body>

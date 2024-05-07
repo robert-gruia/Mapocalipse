@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'authentication',
     'chat',
     'game',
+    'multiplayer',
+    'singleplayer',
 ]
 
 MIDDLEWARE = [

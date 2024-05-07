@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- css imports -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'singleplayer/css/navbarStyle.css' %}">
+    <link rel="stylesheet" href="{% static 'singleplayer/css/gamemodeStyle.css' %}">
+    {% block css %} {% endblock %}
+    <!-- js defer imports -->
+    <script type="module" src="{% static 'singleplayer/js/gamemodeScript.js' %}" defer></script>
+    {% block jsdefer%} {% endblock%}
+    <title>Singleplayer</title>
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    <div class="modesContainer">
+        <div class="gamemodes">
+            <div class="container">
+                <div class="card__container">
+                    <article class="card__article">
+                        <img src="{% static 'game/imgs/earth.jpg' %}" alt="image" class="card__img">
+
+                        <div class="card__data">
+                            <h2 class="card__title">World Mode</h2>
+                            <span class="card__description">Embark on a journey all over the world without any limit.
+                                The most
+                                chill game mode.</span>
+                            <a href="../world" class="card__button">Play</a>
+                        </div>
+                    </article>
+
+                    <article class="card__article">
+                        <img src="{% static 'game/imgs/timer.jpg' %}" alt="image" class="card__img">
+
+                        <div class="card__data">
+                            <h2 class="card__title">Time Limit Mode</h2>
+                            <span class="card__description">You want a more challenging game mode? Then this is the
+                                right
+                                choice!</span>
+                            <a href="../timelimit" class="card__button">Play</a>
+                        </div>
+                    </article>
+                    <article class="card__article">
+                        <img src="{% static 'game/imgs/italy.jpg' %}" alt="image" class="card__img">
+
+                        <div class="card__data">
+                            <h2 class="card__title">Italy</h2>
+                            <span class="card__description">Embark in your beautiful journey in Italy! You'll see all
+                                from the
+                                Sicily island in the south to the Alps in the north. </span>
+                            <a href="../country" class="card__button">Play</a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

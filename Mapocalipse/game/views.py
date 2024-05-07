@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from geopy.distance import geodesic
@@ -8,24 +8,11 @@ def homepage(request):
     return render(request, 'homepage.html')
 
 
-def multiplayer(request):
-    return render(request, 'multiplayer.html')
-
-
 def singleplayer(request):
-    return render(request, 'singleplayer.html')    
+    return redirect('singleplayer:home')
 
-
-def world(request):
-    return render(request, 'world.html')
-
-
-def timeLimit(request):
-    return render(request, 'timeLimit.html')
-
-
-def country(request, country):
-    return render(request, 'country.html', {'country': country})
+def multiplayer(request):
+    return redirect('multiplayer:home')
 
 
 def calculate_distance(request):
