@@ -6,6 +6,14 @@ urlpatterns = [
     path('home/', views.home, name='home'),
     path('world/', views.world, name='world'),
     path('multiplayer/', views.multiplayer, name='multiplayer'),
+    #lobby paths
     path('createLobby/', views.createLobby, name='createLobby'),
-    path('getCoordinates/', views.getCoordinates, name='getCoordinates'),   
+    path('checkExistingLobby/', views.checkExistingLobby, name='checkExistingLobby'),
+    #coordinates paths
+    path('getCoordinates/', views.getCoordinates, name='getCoordinates'),
+    path('checkExistingCoordinates/', views.checkExistingCoordinates, name='checkExistingCoordinates'),
+    path('setCoordinates/', views.setCoordinates, name='setCoordinates'),
+    #game related paths
+    path('changeLocation/', views.changeLocation, name='changeLocation'),
+    path('calculateDistance/', views.calculateDistance, name='calculateDistance'),
 ]
