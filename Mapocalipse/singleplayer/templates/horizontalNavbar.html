@@ -1,0 +1,13 @@
+{% load static %}
+<link href="https://fonts.googleapis.com/css?family=Montserrat:500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'singleplayer/css/horizontalNavbarStyle.css' %}">
+<header>
+    <p class="logo">MAPOCALIPSE</p>
+    <nav>
+        <ul class="nav__links">
+            <li><p>Round <br><span class="roundCount"><span id="roundNumber"></span>/5</span></p></li>
+            <li><p>Points <br><span id="pointsNumber"></span></p></li>
+        </ul>
+    </nav>
+    <a class="cta" href="../home/">Home</a>
+</header>

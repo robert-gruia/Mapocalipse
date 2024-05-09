@@ -44,7 +44,8 @@ def setCoordinates(request):
             lng = item['lng']
             print('Coordinate added:', lat, lng)
             Coordinates.createCoordinate(lat, lng, lobby)
-        request.session['coordListIndex'] = 0 
+        lobby.coordinatesindex = 0
+        lobby.save()
         return HttpResponse('OK', status=200)
     else:
         return JsonResponse({"error": "POST request required."}, status=400)
@@ -62,17 +63,15 @@ def getCoordinates(request):
         })
     data = 0
     try:
-        data = dataList[request.session.get('coordListIndex', 0)]
+        lobby = SinglePlayerLobby.objects.filter(user_id=request.user.id).last()
+        data = dataList[lobby.coordinatesindex]
     except IndexError:
             print('IndexError')
     return JsonResponse(data, safe=False)
 
 
 def checkExistingCoordinates(request):
-    user = request.user
-    lobby = SinglePlayerLobby.objects.filter(user_id=user.id).last()
-    lobby_id = lobby.lobby_id
-    coordinates = Coordinates.objects.filter(lobby_id=lobby_id)
+    coordinates = Coordinates.objects.filter(lobby_id=getLobbyId(request))
     if coordinates:
         return JsonResponse({'exists': True})
     else:
@@ -100,16 +99,41 @@ def calculateDistance(request):
 
     distance = geodesic(point1, point2).kilometers
 
-    return JsonResponse({'distance': distance})
+    min_distance = 100
+    max_distance = 10000
+    max_score = 5000
+
+    if distance <= min_distance:
+        score = max_score
+    elif distance <= max_distance:
+        score = ((max_distance - distance) / (max_distance - min_distance)) * max_score
+    else:
+        score = 0
+    
+    user = request.user
+    lobby = SinglePlayerLobby.objects.filter(user_id=user.id).last()
+    lobby.points += int(score)
+    lobby.save()
+
+    return JsonResponse({'distance': round(distance, 2)})
 
 
 def changeLocation(request):
     if request.method == 'POST':
         try:
-            request.session['coordListIndex'] += 1
-            if request.session['coordListIndex'] >= Coordinates.objects.filter(lobby_id=getLobbyId(request)).count():
+            lobby = SinglePlayerLobby.objects.filter(user_id=request.user.id).last()
+            lobby.coordinatesindex += 1
+            lobby.save()
+            if lobby.coordinatesindex >= Coordinates.objects.filter(lobby_id=getLobbyId(request)).count():
                 SinglePlayerLobby.objects.filter(lobby_id=getLobbyId(request)).delete()
                 return JsonResponse({'over': 'over'})
             return HttpResponse('OK', status=200)
         except:
             return HttpResponse('No valid loaction', status=400)
+        
+def getSessionCoordIndex(request):
+    return JsonResponse({'coordIndex': SinglePlayerLobby.objects.filter(user_id=request.user.id).last().coordinatesindex})
+
+def getPoints(request):
+    return JsonResponse({'points': SinglePlayerLobby.objects.filter(user_id=request.user.id).last().points})
+

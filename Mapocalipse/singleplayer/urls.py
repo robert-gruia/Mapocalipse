@@ -13,7 +13,9 @@ urlpatterns = [
     path('getCoordinates/', views.getCoordinates, name='getCoordinates'),
     path('checkExistingCoordinates/', views.checkExistingCoordinates, name='checkExistingCoordinates'),
     path('setCoordinates/', views.setCoordinates, name='setCoordinates'),
+    path('getSessionCoordIndex/', views.getSessionCoordIndex, name='getSessionCoordIndex'),
     #game related paths
     path('changeLocation/', views.changeLocation, name='changeLocation'),
     path('calculateDistance/', views.calculateDistance, name='calculateDistance'),
+    path('getPoints/', views.getPoints, name='getPoints'),
 ]

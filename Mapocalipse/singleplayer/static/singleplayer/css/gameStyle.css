@@ -12,18 +12,19 @@
     z-index: 1;
 }
 
-
-#mappano,
-#pano {
-    position: absolute;
+  
+  #mappano,
+  #pano {
     height: 100%;
     width: 100%;
     z-index: 1;
-}
+  }
+  
+  body {
+    display: flex;
+    flex-direction: column;
+  }
 
-/* 
-* Optional: Makes the sample page fill the window. 
-*/
 html,
 body {
     height: 100%;

@@ -4,6 +4,7 @@ let randomLocationMarker;
 let randomLocation;
 let panoMap;
 let line;
+let distance_score;
 
 function drawLine() {
   if (marker && randomLocationMarker) {
@@ -20,7 +21,7 @@ function drawLine() {
     });
 
     line.setMap(map);
-    calculateDistanceBetweenCoordinates(marker.position, randomLocation);
+    distance_score = calculateDistanceBetweenCoordinates(marker.position, randomLocation);
   }
 }
 
@@ -37,19 +38,20 @@ async function initMap() {
 
   const setCoordinates = async () => {
     let coordinates = await getCoordinatesFromServer();
+    console.log(coordinates);
     const panorama = new google.maps.StreetViewPanorama(document.getElementById("pano"), {
       position: coordinates,
       pov: {
         heading: 34,
         pitch: 10,
       },
-      //disableDefaultUI: true,
+      disableDefaultUI: true,
       enableCloseButton: false,
       showRoadLabels: false
     });
-    console.log(coordinates);
     panoMap.setStreetView(panorama);
     panoMap.setCenter(coordinates);
+    console.log(panoMap)
     randomLocation = coordinates;
   };
 
@@ -65,8 +67,9 @@ async function initMap() {
       validCoordinates = await generateValidCoordinates(svService);
       await sendCoordinatesToServer(validCoordinates);
     }
-    
-
+    console.log(await getSessionCoordIndex() + 1);
+    document.querySelector('#roundNumber').innerText = await getSessionCoordIndex() + 1;
+    document.querySelector('#pointsNumber').innerText = await getPoints();
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
   map = await createMap(document.getElementById("map"), { lat: 0, lng: 0 }, 2, "4e6fe42e5a3ab531");
 
@@ -95,8 +98,8 @@ async function initMap() {
     });
   });
 
-
-  let mapButton = createButton(map, "Guess", () => {
+  let nextButton, mapButton;
+  mapButton = createButton(map, "Guess", async () => {
     randomLocationMarker = new AdvancedMarkerElement({
       position: randomLocation,
       map: map,
@@ -106,13 +109,15 @@ async function initMap() {
     nextButton.style.display = "block";
   });
 
-  let nextButton = createButton(map, "Next", async () => {
+  nextButton = createButton(map, "Next", async () => {
     isGuessable = false;
     let response = await changeLocation();
     if (response === "over") {
       window.location.href = "../home/";
     }  
     await setCoordinates();
+    document.querySelector('#roundNumber').innerText = await getSessionCoordIndex() + 1;
+    document.querySelector('#pointsNumber').innerText = await getPoints();
     randomLocationMarker.setMap(null);
     panoMap.setStreetView(null);
     removeLine();
