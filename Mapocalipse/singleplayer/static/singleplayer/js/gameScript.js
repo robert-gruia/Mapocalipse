@@ -31,10 +31,13 @@ function removeLine() {
   }
 }
 
+async function endRound() {
+  await deleteLobby();
+  window.location.href = "../home/";
+}
 
 async function initMap() {
   const svService = new google.maps.StreetViewService();
-
 
   const setCoordinates = async () => {
     let coordinates = await getCoordinatesFromServer();
@@ -55,6 +58,7 @@ async function initMap() {
     randomLocation = coordinates;
   };
 
+  document.querySelector('.endButton').addEventListener('click', endRound);
 
   //actual generation of the coordinates
   try {
@@ -132,8 +136,6 @@ async function initMap() {
   } catch (error) {
     console.error(error);
   }
-
-  
 }
 
 window.loadGoogleMapsApi().then(initMap).catch(console.error);

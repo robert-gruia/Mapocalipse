@@ -9,7 +9,11 @@ import json
 # Create your views here.
 
 def home(request):
-    return render(request, 'home.html')
+    user_id = request.user.id
+    user_lobbies = SinglePlayerLobby.objects.filter(user_id=user_id)
+    for lobby in user_lobbies:
+        lobby.coordinatesindex += 1
+    return render(request, 'home.html', {'user_lobbies': user_lobbies})
 
 
 def world(request):
@@ -113,6 +117,7 @@ def calculateDistance(request):
     user = request.user
     lobby = SinglePlayerLobby.objects.filter(user_id=user.id).last()
     lobby.points += int(score)
+    lobby.coordinatesindex += 1
     lobby.save()
 
     return JsonResponse({'distance': round(distance, 2)})
@@ -122,8 +127,6 @@ def changeLocation(request):
     if request.method == 'POST':
         try:
             lobby = SinglePlayerLobby.objects.filter(user_id=request.user.id).last()
-            lobby.coordinatesindex += 1
-            lobby.save()
             if lobby.coordinatesindex >= Coordinates.objects.filter(lobby_id=getLobbyId(request)).count():
                 SinglePlayerLobby.objects.filter(lobby_id=getLobbyId(request)).delete()
                 return JsonResponse({'over': 'over'})
@@ -136,4 +139,8 @@ def getSessionCoordIndex(request):
 
 def getPoints(request):
     return JsonResponse({'points': SinglePlayerLobby.objects.filter(user_id=request.user.id).last().points})
+
+def deleteLobby(request):
+    SinglePlayerLobby.objects.filter(user_id=request.user.id).delete()
+    return HttpResponse('OK', status=200)
 

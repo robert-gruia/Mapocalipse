@@ -194,3 +194,19 @@ async function getPoints() {
   console.log(data);
   return data.points;
 }
+
+async function deleteLobby() {
+  const response = await fetch('../deleteLobby/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+    return await response.text();
+}

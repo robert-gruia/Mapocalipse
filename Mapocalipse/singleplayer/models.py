@@ -19,6 +19,7 @@ class SinglePlayerLobby(models.Model):
     coordinatesindex = models.IntegerField(default=0)
     time_duration = models.DurationField(default=datetime.timedelta(minutes=5))
     points = models.IntegerField(default=0)
+    gamemode = models.CharField(default=GameMode.WORLD, max_length=20)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     @classmethod

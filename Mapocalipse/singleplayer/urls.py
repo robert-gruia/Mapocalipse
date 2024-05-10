@@ -8,6 +8,7 @@ urlpatterns = [
     path('multiplayer/', views.multiplayer, name='multiplayer'),
     #lobby paths
     path('createLobby/', views.createLobby, name='createLobby'),
+    path('deleteLobby/', views.deleteLobby, name='deleteLobby'),
     path('checkExistingLobby/', views.checkExistingLobby, name='checkExistingLobby'),
     #coordinates paths
     path('getCoordinates/', views.getCoordinates, name='getCoordinates'),
