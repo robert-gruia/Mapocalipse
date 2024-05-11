@@ -1,4 +1,7 @@
-//checks if there are already existent coordinates
+// THIS FILE CONTAINS ALL THE FUNCTIONS THAT INTERACT WITH THE SERVER
+
+
+// Checks if lobby coordinates already exist
 const checkExistingCoordinates = async () => {
   const response = await fetch('../checkExistingCoordinates/', {
     method: 'POST',
@@ -17,8 +20,8 @@ const checkExistingCoordinates = async () => {
   return data.exists;
 }
 
-//valid coordinates generation
 
+// Generation of valid coordinates
 const generateValidCoordinates = async (svService) => {
   console.log('generating coordinates');
   console.log(svService);
@@ -38,7 +41,7 @@ const generateValidCoordinates = async (svService) => {
   return validCoordinates.slice(0, 5);
 };
 
-//send coordinates to server
+// Send coordinates to server
 const sendCoordinatesToServer = async (validCoordinates) => {
   const response = await fetch('../setCoordinates/', {
     method: 'POST',
@@ -61,6 +64,7 @@ const sendCoordinatesToServer = async (validCoordinates) => {
 };
 
 
+// Creates the lobby
 const createLobby = async () => {
   const response = await fetch('../createLobby/', {
     method: 'POST',
@@ -82,13 +86,15 @@ const createLobby = async () => {
   }
 };
 
-const checkExistsingLobby = async () => {
+// Checks if the lobby exists
+const checkExistsingLobby = async (lobby_id) => {
   const response = await fetch('../checkExistingLobby/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'X-CSRFToken': getCookie('csrftoken'),
     },
+    body: JSON.stringify({'lobby_id': lobby_id}),
   });
 
   if (!response.ok) {
@@ -100,7 +106,7 @@ const checkExistsingLobby = async () => {
 };
 
 
-//get coordinates from server
+// Gets the coordinates from the server
 const getCoordinatesFromServer = async () => {
   const response = await fetch('../getCoordinates/', {
     method: 'POST',
@@ -117,7 +123,7 @@ const getCoordinatesFromServer = async () => {
 };
 
 
-//change coordinate list index
+// Change coordinates list index of the lobby
 const changeLocation = async () => {
   const response = await fetch('../changeLocation/', {
     method: 'POST',
@@ -141,7 +147,7 @@ const changeLocation = async () => {
 };
 
 
-//distance calculation
+// Distance and point for that distance calculation
 async function calculateDistanceBetweenCoordinates(position1, position2) {
   const lat1 = position1.lat;
   const lng1 = position1.lng;
@@ -162,8 +168,7 @@ async function calculateDistanceBetweenCoordinates(position1, position2) {
   return data;
 }
 
-//get the index of the current coordinate in the coordinates list
-//useful for seeing in which round the player is 
+// Gets the current index of the coordinates list
 async function getSessionCoordIndex() {
   const response = await fetch('../getSessionCoordIndex/', {
     method: 'POST',
@@ -178,7 +183,7 @@ async function getSessionCoordIndex() {
   return data.coordIndex;
 }
 
-
+// Gets the points of the lobby
 async function getPoints() {
   const response = await fetch('../getPoints/', {
     method: 'POST',
@@ -193,6 +198,7 @@ async function getPoints() {
   return data.points;
 }
 
+// Deletes the lobby
 async function deleteLobby() {
   const response = await fetch('../deleteLobby/', {
     method: 'POST',
@@ -207,4 +213,19 @@ async function deleteLobby() {
   }
 
     return await response.text();
+}
+
+
+async function getLobbyId() {
+  const response = await fetch('../getLobbyId/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    }
+  });
+
+  const data = await response.json();
+  console.log(data);
+  return data.lobby_id;
 }

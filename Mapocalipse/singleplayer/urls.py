@@ -10,6 +10,7 @@ urlpatterns = [
     path('createLobby/', views.createLobby, name='createLobby'),
     path('deleteLobby/', views.deleteLobby, name='deleteLobby'),
     path('checkExistingLobby/', views.checkExistingLobby, name='checkExistingLobby'),
+    path('getLobbyId/', views.getLobbyId, name='getLobbyId'),
     #coordinates paths
     path('getCoordinates/', views.getCoordinates, name='getCoordinates'),
     path('checkExistingCoordinates/', views.checkExistingCoordinates, name='checkExistingCoordinates'),

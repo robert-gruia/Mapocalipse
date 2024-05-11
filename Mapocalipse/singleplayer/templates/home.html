@@ -17,7 +17,7 @@
 
 <body>
     {% include 'navbar.html' %}
-    <div class="modesContainer">
+    <div class="modesContainer modes">
         <div class="gamemodes">
             <div class="container">
                 <div class="card__container">
@@ -29,7 +29,11 @@
                             <span class="card__description">Embark on a journey all over the world without any limit.
                                 The most
                                 chill game mode.</span>
-                            <a href="../world" class="card__button">Play</a>
+                            <form method="POST" action="../world/" , class="no-background">
+                                {% csrf_token %}
+                                <a href="" onclick=" event.preventDefault(); this.parentNode.submit();"
+                                    class="card__button">Play</a>
+                            </form>
                         </div>
                     </article>
 
@@ -41,7 +45,11 @@
                             <span class="card__description">You want a more challenging game mode? Then this is the
                                 right
                                 choice!</span>
-                            <a href="../timelimit" class="card__button">Play</a>
+                            <form method="POST" action="../timelimit" , class="no-background">
+                                {% csrf_token %}
+                                <a href="" onclick=" event.preventDefault(); this.parentNode.submit();"
+                                    class="card__button">Play</a>
+                            </form>
                         </div>
                     </article>
                     <article class="card__article">
@@ -52,14 +60,18 @@
                             <span class="card__description">Embark in your beautiful journey in Italy! You'll see all
                                 from the
                                 Sicily island in the south to the Alps in the north. </span>
-                            <a href="../country" class="card__button">Play</a>
+                            <form method="POST" action="../country" , class="no-background">
+                                {% csrf_token %}
+                                <a href="" onclick=" event.preventDefault(); this.parentNode.submit();"
+                                    class="card__button">Play</a>
+                            </form>
                         </div>
                     </article>
                 </div>
             </div>
         </div>
     </div>
-    <!--{% if user_lobbies %}
+    {% if user_lobbies %}
     <div class="ongoingContainer">
         <h2 class="card__title ongoingTitle">Ongoing Rounds:</h2>
         <div class="ongoingGames modesContainer">
@@ -80,7 +92,28 @@
                                 <h2 class="card__title">World Mode</h2>
                                 <span class="card__description">Round: {{lobby.coordinatesindex}}/5 <br>Points:
                                     {{lobby.points}}</span>
-                                <a href="../world" class="card__button">Play</a>
+                                {% if lobby.gamemode == 'world' %}
+                                <form method="POST" action="../world/" , class="no-background">
+                                    <input type="hidden" name="lobby_id" value="{{lobby.lobby_id}}">
+                                    {% csrf_token %}
+                                    <a href="" onclick=" event.preventDefault(); this.parentNode.submit();"
+                                        class="card__button">Play</a>
+                                </form>
+                                {% elif lobby.gamemode == 'timelimit' %}
+                                <form method="POST" action="../timelimit/" , class="no-background">
+                                    <input type="hidden" name="lobby_id" value="{{lobby.lobby_id}}">
+                                    {% csrf_token %}
+                                    <a href="" onclick=" event.preventDefault(); this.parentNode.submit();"
+                                        class="card__button">Play</a>
+                                </form>
+                                {% else %}
+                                <form method="POST" action="../country/" , class="no-background">
+                                    <input type="hidden" name="lobby_id" value="{{lobby.lobby_id}}">
+                                    {% csrf_token %}
+                                    <a href="" onclick=" event.preventDefault(); this.parentNode.submit();"
+                                        class="card__button">Play</a>
+                                </form>
+                                {% endif %}
                             </div>
                         </article>
                         {% endfor %}
@@ -89,7 +122,7 @@
             </div>
         </div>
     </div>
-    {% endif %}-->
+    {% endif %}
 </body>
 
 </html>

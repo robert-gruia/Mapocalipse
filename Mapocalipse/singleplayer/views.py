@@ -1,7 +1,7 @@
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from .models import SinglePlayerLobby, Coordinates
-from .utils import generateRandomCode, getLobbyId
+from .utils import generateRandomCode, getLobbyRef
 from geopy.distance import geodesic
 
 import json
@@ -17,7 +17,12 @@ def home(request):
 
 
 def world(request):
-    return render(request, 'singleWorld.html')
+    if request.POST.get('lobby_id') is None:
+        request.session['lobby_id'] = 0
+        return render(request, 'singleWorld.html')
+    else:
+        request.session['lobby_id'] = request.POST.get('lobby_id')
+        return render(request, 'singleWorld.html')
 
 def multiplayer(request):
     return redirect('multiplayer:home')
@@ -31,6 +36,8 @@ def createLobby(request):
             if not SinglePlayerLobby.objects.filter(lobby_id=lobby_id).exists():
                 break
         lobby = SinglePlayerLobby.createLobby(lobby_id, user.id)
+        print("Lobby Id", lobby_id)
+        request.session['lobby_id'] = lobby_id
         print('Lobby created:', lobby_id)
         return HttpResponse('OK', status=200) 
     else:
@@ -42,7 +49,7 @@ def setCoordinates(request):
         data = json.loads(request.body)
         data = data[:5]
         user = request.user
-        lobby = SinglePlayerLobby.objects.filter(user_id=user.id).last()
+        lobby = SinglePlayerLobby.objects.filter(user_id=user.id, lobby_id=getLobbyRef(request)).last()
         for item in data:
             lat = item['lat']
             lng = item['lng']
@@ -56,91 +63,129 @@ def setCoordinates(request):
 
 
 def getCoordinates(request):
-    coordinates = Coordinates.objects.filter(lobby_id=getLobbyId(request))
-    for coordinate in coordinates:
-        print('Coordinate:', coordinate.lat, coordinate.lng)
-    dataList = []
-    for coordinate in coordinates:
-        dataList.append({
-            'lat': coordinate.lat,
-            'lng': coordinate.lng
-        })
-    data = 0
-    try:
-        lobby = SinglePlayerLobby.objects.filter(user_id=request.user.id).last()
-        data = dataList[lobby.coordinatesindex]
-    except IndexError:
-            print('IndexError')
-    return JsonResponse(data, safe=False)
+    if request.method == 'POST':
+        coordinates = Coordinates.objects.filter(lobby_id=getLobbyRef(request))
+        for coordinate in coordinates:
+            print('Coordinate:', coordinate.lat, coordinate.lng)
+        dataList = []
+        for coordinate in coordinates:
+            dataList.append({
+                'lat': coordinate.lat,
+                'lng': coordinate.lng
+            })
+        data = 0
+        try:
+            lobby = SinglePlayerLobby.objects.filter(user_id=request.user.id, lobby_id=getLobbyRef(request)).last()
+            data = dataList[lobby.coordinatesindex]
+        except IndexError:
+                print('IndexError')
+        return JsonResponse(data, safe=False)
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
 
 
 def checkExistingCoordinates(request):
-    coordinates = Coordinates.objects.filter(lobby_id=getLobbyId(request))
-    if coordinates:
-        return JsonResponse({'exists': True})
+    if request.method == 'POST':
+        coordinates = Coordinates.objects.filter(lobby_id=getLobbyRef(request))
+        if coordinates:
+            return JsonResponse({'exists': True})
+        else:
+            return JsonResponse({'exists': False})
     else:
-        return JsonResponse({'exists': False})
+        return JsonResponse({"error": "POST request required."}, status=400)
     
 def checkExistingLobby(request):
-    user = request.user
-    lobby = SinglePlayerLobby.objects.filter(user_id=user.id).last()
-    if lobby:
-        return JsonResponse({'exists': True})
+    if request.method == 'POST':
+        user = request.user
+        lobby_id = request.session.get('lobby_id')
+        lobby = SinglePlayerLobby.objects.filter(user_id=user.id, lobby_id=getLobbyRef(request)).last()
+        if lobby:
+            return JsonResponse({'exists': True})
+        else:
+            return JsonResponse({'exists': False})
     else:
-        return JsonResponse({'exists': False})
+        return JsonResponse({"error": "POST request required."}, status=400)
 
 
 
 def calculateDistance(request):
-    data = json.loads(request.body)
-    lat1 = float(data.get('lat1'))
-    lng1 = float(data.get('lng1'))
-    lat2 = float(data.get('lat2'))
-    lng2 = float(data.get('lng2'))
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        lat1 = float(data.get('lat1'))
+        lng1 = float(data.get('lng1'))
+        lat2 = float(data.get('lat2'))
+        lng2 = float(data.get('lng2'))
 
-    point1 = (lat1, lng1)
-    point2 = (lat2, lng2)
+        point1 = (lat1, lng1)
+        point2 = (lat2, lng2)
 
-    distance = geodesic(point1, point2).kilometers
+        distance = geodesic(point1, point2).kilometers
 
-    min_distance = 100
-    max_distance = 10000
-    max_score = 5000
+        min_distance = 100
+        max_distance = 10000
+        max_score = 5000
 
-    if distance <= min_distance:
-        score = max_score
-    elif distance <= max_distance:
-        score = ((max_distance - distance) / (max_distance - min_distance)) * max_score
+        if distance <= min_distance:
+            score = max_score
+        elif distance <= max_distance:
+            score = ((max_distance - distance) / (max_distance - min_distance)) * max_score
+        else:
+            score = 0
+        
+        user = request.user
+        lobby = SinglePlayerLobby.objects.filter(user_id=user.id, lobby_id=getLobbyRef(request)).last()
+        lobby.points += int(score)
+        lobby.coordinatesindex += 1
+        lobby.save()
+
+        return JsonResponse({'distance': round(distance, 2), 'score': int(score)})
     else:
-        score = 0
-    
-    user = request.user
-    lobby = SinglePlayerLobby.objects.filter(user_id=user.id).last()
-    lobby.points += int(score)
-    lobby.coordinatesindex += 1
-    lobby.save()
-
-    return JsonResponse({'distance': round(distance, 2), 'score': int(score)})
+        return JsonResponse({"error": "POST request required."}, status=400)
 
 
 def changeLocation(request):
     if request.method == 'POST':
         try:
             lobby = SinglePlayerLobby.objects.filter(user_id=request.user.id).last()
-            if lobby.coordinatesindex >= Coordinates.objects.filter(lobby_id=getLobbyId(request)).count():
-                SinglePlayerLobby.objects.filter(lobby_id=getLobbyId(request)).delete()
+            if lobby.coordinatesindex >= Coordinates.objects.filter(lobby_id=getLobbyRef(request)).count():
+                SinglePlayerLobby.objects.filter(lobby_id=getLobbyRef(request)).delete()
                 return JsonResponse({'over': 'over'})
             return HttpResponse('OK', status=200)
         except:
             return HttpResponse('No valid loaction', status=400)
-        
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+  
 def getSessionCoordIndex(request):
-    return JsonResponse({'coordIndex': SinglePlayerLobby.objects.filter(user_id=request.user.id).last().coordinatesindex})
+    if request.method == 'POST':
+        if SinglePlayerLobby.objects.filter(user_id=request.user.id, lobby_id=getLobbyRef(request)).last():
+            return JsonResponse({'coordIndex': SinglePlayerLobby.objects.filter(user_id=request.user.id, lobby_id=getLobbyRef(request)).last().coordinatesindex})
+        else:
+            return JsonResponse({'coordIndex': 0})
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
 
 def getPoints(request):
-    return JsonResponse({'points': SinglePlayerLobby.objects.filter(user_id=request.user.id).last().points})
-
+    if request.method == 'POST':
+        return JsonResponse({'points': SinglePlayerLobby.objects.filter(user_id=request.user.id, lobby_id=getLobbyRef(request)).last().points})
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
 def deleteLobby(request):
-    SinglePlayerLobby.objects.filter(user_id=request.user.id).delete()
-    return HttpResponse('OK', status=200)
+    if request.method == 'POST':
+        SinglePlayerLobby.objects.filter(user_id=request.user.id, lobby_id=getLobbyRef(request)).delete()
+        request.session['lobby_id'] = 0
+        return HttpResponse('OK', status=200)
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+def getLobbyId(request):
+    if request.method == 'POST':
+        if request.session.get('lobby_id') is not None:
+            return JsonResponse({'lobby_id': request.session.get('lobby_id')})
+        else:
+            return JsonResponse({'lobby_id': 0})  
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
+
 

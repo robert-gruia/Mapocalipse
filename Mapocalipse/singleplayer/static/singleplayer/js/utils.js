@@ -61,3 +61,22 @@ function createButton(map, text, callback) {
     map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(controlDiv);
     return controlUI;
 }
+
+
+function createMap(mapElement, center, zoom, mapId) {
+
+    const mapOptions = {
+        center: center,
+        zoom: zoom,
+    };
+
+    if (mapId) {
+        if (typeof mapId !== 'string') {
+            console.error('mapId is not a string:', mapId);
+            return;
+        }
+        mapOptions.mapId = mapId;
+    }
+
+    return new google.maps.Map(mapElement, mapOptions);
+}
