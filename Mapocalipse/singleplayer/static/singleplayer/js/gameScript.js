@@ -4,9 +4,9 @@ let randomLocationMarker;
 let randomLocation;
 let panoMap;
 let line;
-let distance_score;
+let overlay;
 
-function drawLine() {
+async function drawLine() {
   if (marker && randomLocationMarker) {
     if (line) {
       line.setMap(null);
@@ -21,7 +21,7 @@ function drawLine() {
     });
 
     line.setMap(map);
-    distance_score = calculateDistanceBetweenCoordinates(marker.position, randomLocation);
+    return await calculateDistanceBetweenCoordinates(marker.position, randomLocation);
   }
 }
 
@@ -66,6 +66,10 @@ async function initMap() {
     if(! await checkExistsingLobby()){
       await createLobby();
     }
+    if(await getSessionCoordIndex() === 5){
+      await deleteLobby();
+      window.location.href = "../home/";
+    }
     if (!await checkExistingCoordinates()) {
       console.log('yep');
       validCoordinates = await generateValidCoordinates(svService);
@@ -108,9 +112,32 @@ async function initMap() {
       position: randomLocation,
       map: map,
     });
-    drawLine();
+    let distance_score = await drawLine();
+
     mapButton.style.display = "none";
     nextButton.style.display = "block";
+    // Animate zoom in
+    map.setZoom(5);
+    map.panTo(randomLocation);
+  
+    setTimeout(() => {
+      map.setZoom(3);
+    }, 2000);
+  
+    // Create a transparent element with points and distance
+    overlay = document.createElement('div');
+    overlay.id = 'overlay';
+    overlay.style.position = 'absolute';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '50px';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    overlay.style.display = 'flex';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    overlay.innerHTML = `<p style="margin: 0; color: white;">Points: ${distance_score.score} Distance: ${distance_score.distance}</p>`;
+    document.getElementById('map').appendChild(overlay);
   });
 
   nextButton = createButton(map, "Next", async () => {
@@ -119,6 +146,7 @@ async function initMap() {
     if (response === "over") {
       window.location.href = "../home/";
     }  
+    if(document.getElementById('overlay')) document.getElementById('overlay').remove();
     await setCoordinates();
     document.querySelector('#roundNumber').innerText = await getSessionCoordIndex() + 1;
     document.querySelector('#pointsNumber').innerText = await getPoints();
@@ -131,7 +159,6 @@ async function initMap() {
   mapButton.style.display = "none";
   nextButton.style.display = "none";
   panoMap = createMap(document.getElementById("panomap"), { lat: 0, lng: 0 }, 2);
-
   await setCoordinates();
   } catch (error) {
     console.error(error);

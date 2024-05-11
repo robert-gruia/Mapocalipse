@@ -25,7 +25,7 @@ const generateValidCoordinates = async (svService) => {
   let validCoordinates = [];
   while (validCoordinates.length < 5) {
     const promises = Array.from({ length: 20 }, () => new Promise((resolve) => {
-      svService.getPanorama({ location: getRandomArbitrary(), radius: 100000 }, (data, status) => {
+      svService.getPanorama({ location: getRandomArbitrary(), radius: 1000000 }, (data, status) => {
         if (status === 'OK' && data.links.length > 2) {
           validCoordinates.push(data.location.latLng);
         }
@@ -113,7 +113,6 @@ const getCoordinatesFromServer = async () => {
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
-
   return await response.json();
 };
 
@@ -160,7 +159,6 @@ async function calculateDistanceBetweenCoordinates(position1, position2) {
 
   const data = await response.json();
 
-  console.log('Distance:', data.distance);
   return data;
 }
 

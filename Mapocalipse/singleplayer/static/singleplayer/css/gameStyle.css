@@ -3,31 +3,37 @@
  * that contains the map. 
  */
 #map {
-    height: 35%;
-    width: 35%;
-    position: absolute;
-    top: 80%;
-    left: 78%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
+  height: 35%;
+  width: 35%;
+  position: absolute;
+  top: 80%;
+  left: 78%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
 }
 
-  
-  #mappano,
-  #pano {
-    height: 100%;
-    width: 100%;
-    z-index: 1;
-  }
-  
-  body {
-    display: flex;
-    flex-direction: column;
-  }
+.fullMap {
+  width: 100% !important;
+  height: 100% !important;
+  top: 0;
+  left: 0;
+}
+
+#mappano,
+#pano {
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
 
 html,
 body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }

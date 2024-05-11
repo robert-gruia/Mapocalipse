@@ -120,7 +120,7 @@ def calculateDistance(request):
     lobby.coordinatesindex += 1
     lobby.save()
 
-    return JsonResponse({'distance': round(distance, 2)})
+    return JsonResponse({'distance': round(distance, 2), 'score': int(score)})
 
 
 def changeLocation(request):

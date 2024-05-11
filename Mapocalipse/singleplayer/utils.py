@@ -8,4 +8,4 @@ def generateRandomCode(length):
 def getLobbyId(request):
     user = request.user
     lobby = SinglePlayerLobby.objects.filter(user_id=user.id).last()
-    return lobby.lobby_id
+    return lobby.lobby_id if lobby is not None else None
