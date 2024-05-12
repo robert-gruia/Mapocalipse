@@ -37,7 +37,7 @@ class CustomUserManager(BaseUserManager):
     
 
 class User(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(max_length=100, unique=True)
+    username = models.CharField(max_length=100)
     usercode = models.CharField(max_length=6, unique=True)
     password = models.CharField(max_length=32)
     email = models.EmailField(max_length=100, unique=True)
@@ -49,8 +49,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     #customized user manager
     objects = CustomUserManager()
 
-    REQUIRED_FIELDS = ['email']
-    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['username']
+    USERNAME_FIELD = 'email'
 
     #defines what table is used by the model
     class Meta:

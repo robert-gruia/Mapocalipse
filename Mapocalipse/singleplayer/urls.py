@@ -5,11 +5,14 @@ from . import views
 urlpatterns = [
     path('home/', views.home, name='home'),
     path('world/', views.world, name='world'),
+    path('timelimit/', views.timelimit, name='timelimit'),
     path('multiplayer/', views.multiplayer, name='multiplayer'),
     #lobby paths
     path('createLobby/', views.createLobby, name='createLobby'),
     path('deleteLobby/', views.deleteLobby, name='deleteLobby'),
     path('checkExistingLobby/', views.checkExistingLobby, name='checkExistingLobby'),
+    path('changeLobbyType/', views.changeLobbyType, name='changeLobbyType'),
+    path('getGamemode/', views.getGamemode, name='getGamemode'),
     path('getLobbyId/', views.getLobbyId, name='getLobbyId'),
     #coordinates paths
     path('getCoordinates/', views.getCoordinates, name='getCoordinates'),

@@ -45,7 +45,7 @@
                             <span class="card__description">You want a more challenging game mode? Then this is the
                                 right
                                 choice!</span>
-                            <form method="POST" action="../timelimit" , class="no-background">
+                            <form method="POST" action="../timelimit/" , class="no-background">
                                 {% csrf_token %}
                                 <a href="" onclick=" event.preventDefault(); this.parentNode.submit();"
                                     class="card__button">Play</a>
@@ -60,7 +60,7 @@
                             <span class="card__description">Embark in your beautiful journey in Italy! You'll see all
                                 from the
                                 Sicily island in the south to the Alps in the north. </span>
-                            <form method="POST" action="../country" , class="no-background">
+                            <form method="POST" action="../country/" , class="no-background">
                                 {% csrf_token %}
                                 <a href="" onclick=" event.preventDefault(); this.parentNode.submit();"
                                     class="card__button">Play</a>
@@ -89,10 +89,10 @@
                             {% endif %}
 
                             <div class="card__data">
+                                {% if lobby.gamemode == 'world' %}
                                 <h2 class="card__title">World Mode</h2>
                                 <span class="card__description">Round: {{lobby.coordinatesindex}}/5 <br>Points:
                                     {{lobby.points}}</span>
-                                {% if lobby.gamemode == 'world' %}
                                 <form method="POST" action="../world/" , class="no-background">
                                     <input type="hidden" name="lobby_id" value="{{lobby.lobby_id}}">
                                     {% csrf_token %}
@@ -100,6 +100,9 @@
                                         class="card__button">Play</a>
                                 </form>
                                 {% elif lobby.gamemode == 'timelimit' %}
+                                <h2 class="card__title">Time Limit Mode</h2>
+                                <span class="card__description">Round: {{lobby.coordinatesindex}}/5 <br>Points:
+                                    {{lobby.points}}</span>
                                 <form method="POST" action="../timelimit/" , class="no-background">
                                     <input type="hidden" name="lobby_id" value="{{lobby.lobby_id}}">
                                     {% csrf_token %}
@@ -107,6 +110,9 @@
                                         class="card__button">Play</a>
                                 </form>
                                 {% else %}
+                                <h2 class="card__title">Italy Mode</h2>
+                                <span class="card__description">Round: {{lobby.coordinatesindex}}/5 <br>Points:
+                                    {{lobby.points}}</span>
                                 <form method="POST" action="../country/" , class="no-background">
                                     <input type="hidden" name="lobby_id" value="{{lobby.lobby_id}}">
                                     {% csrf_token %}

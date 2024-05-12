@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.contrib.auth import login as auth_login
 from .models import User
 from .utils import hash_password, generateRandomCode
+from django.http import JsonResponse
 
 
 def login(request):
@@ -12,12 +14,12 @@ def login(request):
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
-            return render(request, 'login.html', {'error': 'Login failed. Please try again.'})
+            return JsonResponse({'error': 'Login failed. Please try again.'})
         if user.password == hash_password(password):
             auth_login(request, user)
-            return redirect('game:homepage')
+            return JsonResponse({'redirect': reverse('game:homepage')})
         else:
-            return render(request, 'login.html', {'error': 'Login failed. Please try again.'})
+            return JsonResponse({'error': 'Login failed. Please try again.'})
     else:
         return render(request, 'login.html')
         
@@ -31,7 +33,7 @@ def register(request):
         email = request.POST['email']
 
         if password != confirmPassword:
-            return render(request, 'login.html', {'error': 'Passwords do not match'})
+            return JsonResponse({'error': 'Passwords do not match'})
         
         while True:
             usercode = generateRandomCode(6)
@@ -40,8 +42,9 @@ def register(request):
         try:
             user = User.objects.create_user(username=username, email=email, first_name=firstname, last_name=lastname, password=password, usercode=usercode)
         except ValueError as ve:
-            return render(request, 'login.html', {'error': str(ve)})
+            return JsonResponse({'error': str(ve)})
         auth_login(request, user)
-        return redirect('game:homepage')
+        return JsonResponse({'redirect': reverse('game:homepage')})
+
     else:
         return render(request, 'login.html')

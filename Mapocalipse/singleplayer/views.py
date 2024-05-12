@@ -24,6 +24,15 @@ def world(request):
         request.session['lobby_id'] = request.POST.get('lobby_id')
         return render(request, 'singleWorld.html')
 
+def timelimit(request):
+    if request.POST.get('lobby_id') is None:
+        request.session['lobby_id'] = 0
+        return render(request, 'singleTimelimit.html')
+    else:
+        request.session['lobby_id'] = request.POST.get('lobby_id')
+        return render(request, 'singleTimelimit.html')
+
+
 def multiplayer(request):
     return redirect('multiplayer:home')
 
@@ -43,6 +52,16 @@ def createLobby(request):
     else:
         return JsonResponse({"error": "POST request required."}, status=400)
 
+def changeLobbyType(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user = request.user
+        lobby = SinglePlayerLobby.objects.filter(user_id=user.id, lobby_id=getLobbyRef(request)).last()
+        lobby.gamemode = data.get('gamemode')
+        lobby.save()
+        return HttpResponse('OK', status=200)
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
 
 def setCoordinates(request):
     if request.method == 'POST':
@@ -176,6 +195,12 @@ def deleteLobby(request):
         SinglePlayerLobby.objects.filter(user_id=request.user.id, lobby_id=getLobbyRef(request)).delete()
         request.session['lobby_id'] = 0
         return HttpResponse('OK', status=200)
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
+    
+def getGamemode(request):
+    if request.method == 'POST':
+        return JsonResponse({'gamemode': SinglePlayerLobby.objects.filter(user_id=request.user.id, lobby_id=getLobbyRef(request)).last().gamemode})
     else:
         return JsonResponse({"error": "POST request required."}, status=400)
 

@@ -229,3 +229,33 @@ async function getLobbyId() {
   console.log(data);
   return data.lobby_id;
 }
+
+
+async function getGamemode() {
+  const response = await fetch('../getGamemode/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    }
+  });
+
+  const data = await response.json();
+  return data.gamemode;
+}
+
+async function changeLobbyType(gamemode) {
+  const response = await fetch('../changeLobbyType/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: JSON.stringify({'gamemode': gamemode })
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+}
