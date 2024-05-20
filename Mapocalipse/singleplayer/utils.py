@@ -1,6 +1,5 @@
 import random
 import string
-from .models import SinglePlayerLobby
 
 def generateRandomCode(length):
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length))

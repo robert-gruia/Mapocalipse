@@ -5,6 +5,7 @@ let randomLocation;
 let panoMap;
 let line;
 let overlay;
+let timer;
 
 async function drawLine() {
   if (marker && randomLocationMarker) {
@@ -36,7 +37,11 @@ async function endRound() {
   window.location.href = "../home/";
 }
 
+async function returnToHomepage(){
+  await changeLobbyTime(timer.getTime());
+  window.location.href = "../home/";
 
+}
 
 async function initMap() {
   // Street view Service creation
@@ -45,7 +50,6 @@ async function initMap() {
   // Function to set valid coordinates(in order for each round)
   const setCoordinates = async () => {
     let coordinates = await getCoordinatesFromServer();
-    console.log(coordinates);
     const panorama = new google.maps.StreetViewPanorama(document.getElementById("pano"), {
       position: coordinates,
       pov: {
@@ -58,12 +62,13 @@ async function initMap() {
     });
     panoMap.setStreetView(panorama);
     panoMap.setCenter(coordinates);
-    console.log(panoMap)
     randomLocation = coordinates;
   };
 
   // Button to finish the round
   document.querySelector('.endButton').addEventListener('click', endRound);
+  // Button to go to homepage without ending the round
+  document.querySelector('.homeButton').addEventListener('click', returnToHomepage);
 
 
   // GAME GENERATION 
@@ -72,8 +77,7 @@ async function initMap() {
     // Check if the lobby exists
     if (await getLobbyId() == 0) {
       await createLobby();
-      await changeLobbyType('timelimit');
-      document.getElementById('timeNav').style.display = 'block'; 
+      await changeLobbyType('timelimit'); 
     }
     // Check if the game is over
     if (await getSessionCoordIndex() === 5) {
@@ -82,12 +86,10 @@ async function initMap() {
     }
     // Check if for that lobby the coordinates are already generated
     if (!await checkExistingCoordinates()) {
-      console.log('yep');
       validCoordinates = await generateValidCoordinates(svService);
       await sendCoordinatesToServer(validCoordinates);
     }
     // Sets the round and the points values
-    console.log(await getSessionCoordIndex() + 1);
     document.querySelector('#roundNumber').innerText = await getSessionCoordIndex() + 1;
     document.querySelector('#pointsNumber').innerText = await getPoints();
     // Advanced Marker Element creation
@@ -160,6 +162,7 @@ async function initMap() {
     // Next button 
     nextButton = createButton(map, "Next", async () => {
       isGuessable = false;
+      timer.stopTimer();
       let response = await changeLocation();
       if (response === "over") {
         window.location.href = "../home/";
@@ -172,11 +175,20 @@ async function initMap() {
       panoMap.setStreetView(null);
       removeLine();
       nextButton.style.display = "none";
+      timer = startTimer(5 * 60, document.querySelector('#timeNumber'), async () => {
+        await endRound();
+      });
     });
+
     mapButton.style.display = "none";
     nextButton.style.display = "none";
     panoMap = createMap(document.getElementById("panomap"), { lat: 0, lng: 0 }, 2);
     await setCoordinates();
+    console.log(await getLobbyTime());
+    timer = startTimer(await getLobbyTime(), document.querySelector('#timeNumber'), async () => {
+      await endRound();
+    });
+    document.getElementById('timeNav').style.display = 'block';
   } catch (error) {
     console.error(error);
   }

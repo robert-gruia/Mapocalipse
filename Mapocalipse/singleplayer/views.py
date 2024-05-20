@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from .models import SinglePlayerLobby, Coordinates
 from .utils import generateRandomCode, getLobbyRef
 from geopy.distance import geodesic
+import datetime
 
 import json
 
@@ -190,6 +191,7 @@ def getPoints(request):
         return JsonResponse({'points': SinglePlayerLobby.objects.filter(user_id=request.user.id, lobby_id=getLobbyRef(request)).last().points})
     else:
         return JsonResponse({"error": "POST request required."}, status=400)
+    
 def deleteLobby(request):
     if request.method == 'POST':
         SinglePlayerLobby.objects.filter(user_id=request.user.id, lobby_id=getLobbyRef(request)).delete()
@@ -197,7 +199,24 @@ def deleteLobby(request):
         return HttpResponse('OK', status=200)
     else:
         return JsonResponse({"error": "POST request required."}, status=400)
+
+def changeLobbyTime(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user = request.user
+        lobby = SinglePlayerLobby.objects.filter(user_id=user.id, lobby_id=getLobbyRef(request)).last()
+        print('Time:', data.get('time'))
+        lobby.time_duration = datetime.timedelta(seconds=int(data.get('time')))
+        lobby.save()
+        return HttpResponse('OK', status=200)
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
     
+def getLobbyTime(request):
+    if request.method == 'POST':
+        return JsonResponse({'time': SinglePlayerLobby.objects.filter(user_id=request.user.id, lobby_id=getLobbyRef(request)).last().time_duration.total_seconds()})
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
 def getGamemode(request):
     if request.method == 'POST':
         return JsonResponse({'gamemode': SinglePlayerLobby.objects.filter(user_id=request.user.id, lobby_id=getLobbyRef(request)).last().gamemode})
@@ -212,5 +231,7 @@ def getLobbyId(request):
             return JsonResponse({'lobby_id': 0})  
     else:
         return JsonResponse({"error": "POST request required."}, status=400)
+
+
 
 

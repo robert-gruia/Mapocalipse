@@ -14,6 +14,8 @@ urlpatterns = [
     path('changeLobbyType/', views.changeLobbyType, name='changeLobbyType'),
     path('getGamemode/', views.getGamemode, name='getGamemode'),
     path('getLobbyId/', views.getLobbyId, name='getLobbyId'),
+    path('changeLobbyTime/', views.changeLobbyTime, name='changeLobbyTime'),
+    path('getLobbyTime/', views.getLobbyTime, name='getLobbyTime'),
     #coordinates paths
     path('getCoordinates/', views.getCoordinates, name='getCoordinates'),
     path('checkExistingCoordinates/', views.checkExistingCoordinates, name='checkExistingCoordinates'),

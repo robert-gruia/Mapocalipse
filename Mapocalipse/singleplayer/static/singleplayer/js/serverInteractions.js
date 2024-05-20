@@ -16,15 +16,12 @@ const checkExistingCoordinates = async () => {
   }
 
   const data = await response.json();
-  console.log(data);
   return data.exists;
 }
 
 
 // Generation of valid coordinates
 const generateValidCoordinates = async (svService) => {
-  console.log('generating coordinates');
-  console.log(svService);
   let validCoordinates = [];
   while (validCoordinates.length < 5) {
     const promises = Array.from({ length: 20 }, () => new Promise((resolve) => {
@@ -179,7 +176,6 @@ async function getSessionCoordIndex() {
   });
 
   const data = await response.json();
-  console.log(data);
   return data.coordIndex;
 }
 
@@ -194,7 +190,6 @@ async function getPoints() {
   });
 
   const data = await response.json();
-  console.log(data);
   return data.points;
 }
 
@@ -226,7 +221,6 @@ async function getLobbyId() {
   });
 
   const data = await response.json();
-  console.log(data);
   return data.lobby_id;
 }
 
@@ -259,3 +253,34 @@ async function changeLobbyType(gamemode) {
   }
 
 }
+
+async function changeLobbyTime(time) {
+  const response = await fetch('../changeLobbyTime/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: JSON.stringify({'time': time })
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+}
+
+async function getLobbyTime() {
+  const response = await fetch('../getLobbyTime/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    }
+  });
+
+  const data = await response.json();
+  console.log(data);
+  return data.time;
+}
+

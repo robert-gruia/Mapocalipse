@@ -45,7 +45,6 @@ async function initMap() {
   // Function to set valid coordinates(in order for each round)
   const setCoordinates = async () => {
     let coordinates = await getCoordinatesFromServer();
-    console.log(coordinates);
     const panorama = new google.maps.StreetViewPanorama(document.getElementById("pano"), {
       position: coordinates,
       pov: {
@@ -58,7 +57,6 @@ async function initMap() {
     });
     panoMap.setStreetView(panorama);
     panoMap.setCenter(coordinates);
-    console.log(panoMap)
     randomLocation = coordinates;
   };
 
@@ -80,12 +78,10 @@ async function initMap() {
     }
     // Check if for that lobby the coordinates are already generated
     if (!await checkExistingCoordinates()) {
-      console.log('yep');
       validCoordinates = await generateValidCoordinates(svService);
       await sendCoordinatesToServer(validCoordinates);
     }
     // Sets the round and the points values
-    console.log(await getSessionCoordIndex() + 1);
     document.querySelector('#roundNumber').innerText = await getSessionCoordIndex() + 1;
     document.querySelector('#pointsNumber').innerText = await getPoints();
     // Advanced Marker Element creation
