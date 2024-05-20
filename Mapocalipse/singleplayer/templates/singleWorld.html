@@ -20,6 +20,8 @@
     <div id="panomap"></div>
     <div id="pano"></div>
     <div id="map"></div>
+
+    {% include 'popup.html' %}
   
 
   <!-- prettier-ignore -->
@@ -45,6 +47,7 @@
     })({ key: "AIzaSyCnVSQtfQXXdIxJOrd613xMj7qo91zMezI", v: "weekly" });
   </script>
   <script src="{% static 'singleplayer/js/utils.js' %}"></script>
+  <script src="{% static 'singleplayer/js/popup.js' %}"></script>
   <script src="{% static 'singleplayer/js/serverInteractions.js' %}"></script>
   <script src="{% static 'singleplayer/js/worldGame.js' %}"></script>
 

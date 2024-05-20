@@ -19,16 +19,16 @@ function getRandomArbitrary() {
     // Divide the area into a grid of 10x10 boxes
     const gridLatSize = 130 / 10; // latitude range from -60 to 70
     const gridLngSize = 360 / 10; // longitude range from -180 to 180
-  
+
     // Select a random box in the grid
     const boxLat = Math.floor(Math.random() * 10) * gridLatSize - 60;
     const boxLng = Math.floor(Math.random() * 10) * gridLngSize - 180;
-  
+
     // Generate a random point within the box
     const lat = Math.random() * gridLatSize + boxLat;
     const lng = Math.random() * gridLngSize + boxLng;
     return { lat, lng };
-  }
+}
 
 
 function createButton(map, text, callback) {
@@ -50,9 +50,9 @@ function createButton(map, text, callback) {
     controlText.style.color = 'rgb(25,25,25)';
     controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
     controlText.style.fontSize = '24px';
-    controlText.style.lineHeight = '48px'; 
+    controlText.style.lineHeight = '48px';
     controlText.style.paddingLeft = '10px';
-    controlText.style.paddingRight = '10px'; 
+    controlText.style.paddingRight = '10px';
     controlText.innerHTML = text;
     controlUI.appendChild(controlText);
 
@@ -82,7 +82,7 @@ function createMap(mapElement, center, zoom, mapId) {
 }
 
 
-function startTimer(duration, display, callback = ()=>{}) {
+function startTimer(duration, display, callback = () => { }) {
     var timer = duration, minutes, seconds;
     var countdown = setInterval(function () {
         minutes = parseInt(timer / 60, 10);
@@ -103,10 +103,10 @@ function startTimer(duration, display, callback = ()=>{}) {
     }, 1000);
 
     return {
-        stopTimer: function() {
+        stopTimer: function () {
             clearInterval(countdown);
         },
-        getTime: function() {
+        getTime: function () {
             return timer;
         }
     };

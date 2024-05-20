@@ -14,13 +14,14 @@
 </head>
 
 <body>
+  {% include 'popup.html' %}
   <div class="navbarContainer">
     {% include 'horizontalNavbar.html' %}
   </div>
     <div id="panomap"></div>
     <div id="pano"></div>
     <div id="map"></div>
-  
+
 
   <!-- prettier-ignore -->
 
@@ -45,6 +46,7 @@
     })({ key: "AIzaSyCnVSQtfQXXdIxJOrd613xMj7qo91zMezI", v: "weekly" });
   </script>
   <script src="{% static 'singleplayer/js/utils.js' %}"></script>
+  <script src="{% static 'singleplayer/js/popup.js' %}"></script>
   <script src="{% static 'singleplayer/js/serverInteractions.js' %}"></script>
   <script src="{% static 'singleplayer/js/timelimitGame.js' %}"></script>
 

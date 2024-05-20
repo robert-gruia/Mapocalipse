@@ -5,6 +5,7 @@ let randomLocation;
 let panoMap;
 let line;
 let overlay;
+let isGuessable = true;
 
 async function drawLine() {
   if (marker && randomLocationMarker) {
@@ -98,21 +99,20 @@ async function initMap() {
       rotateControl: false,
       fullscreenControl: true
     });
-    
+
     //Map event listener
     map.addListener("click", async function (e) {
 
-      if (marker) {
+      if (marker && isGuessable) {
         marker.setMap(null);
       }
-
-
-      mapButton.style.display = "block";
-
-      marker = new AdvancedMarkerElement({
-        position: e.latLng,
-        map: map,
-      });
+      if (isGuessable) {
+        mapButton.style.display = "block";
+        marker = new AdvancedMarkerElement({
+          position: e.latLng,
+          map: map,
+        });
+      }
     });
 
     // Buttons generation
@@ -122,11 +122,11 @@ async function initMap() {
         position: randomLocation,
         map: map,
       });
-
+      isGuessable = false;
       let distance_score = await drawLine();
       mapButton.style.display = "none";
       nextButton.style.display = "block";
-      
+
       // Zoom animation
       map.setZoom(5);
       map.panTo(randomLocation);
@@ -153,19 +153,27 @@ async function initMap() {
 
     // Next button 
     nextButton = createButton(map, "Next", async () => {
-      isGuessable = false;
+      // If sessionCoordIndex is 4, show a popup
+      if (await getSessionCoordIndex() === 4) {
+        let popup = createPopup("#popup", async () => {
+          await endRound();
+        });
+        popup();
+      }
       let response = await changeLocation();
       if (response === "over") {
         window.location.href = "../home/";
       }
       if (document.getElementById('overlay')) document.getElementById('overlay').remove();
       await setCoordinates();
-      document.querySelector('#roundNumber').innerText = await getSessionCoordIndex() + 1;
+      let sessionIndex = await getSessionCoordIndex();
+      document.querySelector('#roundNumber').innerText = sessionIndex + 1;
       document.querySelector('#pointsNumber').innerText = await getPoints();
       randomLocationMarker.setMap(null);
       panoMap.setStreetView(null);
       removeLine();
       nextButton.style.display = "none";
+      isGuessable = true;
     });
     mapButton.style.display = "none";
     nextButton.style.display = "none";

@@ -2,9 +2,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1px 10%;
+    padding: 20px 10%;
     background-color: #24252a;
-    max-height: 10vh;
+    max-height: 20vh;
   }
   
   .logo {
