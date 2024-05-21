@@ -6,7 +6,6 @@ from django.conf import settings
 class GameMode(models.TextChoices):
     WORLD = 'world',
     TIMELIMIT = 'timelimit',
-    ITALY = 'italy',
 
 
 class SinglePlayerLobby(models.Model):

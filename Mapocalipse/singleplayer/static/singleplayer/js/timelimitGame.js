@@ -158,15 +158,24 @@ async function initMap() {
       overlay.style.alignItems = 'center';
       overlay.innerHTML = `<p style="margin: 0; color: white;">Points: ${distance_score.score} Distance: ${distance_score.distance}</p>`;
       document.getElementById('map').appendChild(overlay);
+
+      if (await getSessionCoordIndex() > 4) {
+        document.querySelector('#pointsNumber').innerText = await getPoints();
+        let popup = createPopup("#popup", "Game Over", "Points:" + await getPoints(), async () => {
+          await endRound();
+        });
+        popup();
+      }
+      else {
+        mapButton.style.display = "none";
+        nextButton.style.display = "block";
+      }
     });
 
     // Next button 
     nextButton = createButton(map, "Next", async () => {
       timer.stopTimer();
       let response = await changeLocation();
-      if (response === "over") {
-        window.location.href = "../home/";
-      }
       if (document.getElementById('overlay')) document.getElementById('overlay').remove();
       await setCoordinates();
       document.querySelector('#roundNumber').innerText = await getSessionCoordIndex() + 1;
@@ -175,19 +184,24 @@ async function initMap() {
       panoMap.setStreetView(null);
       removeLine();
       nextButton.style.display = "none";
-      timer = startTimer(5 * 60, document.querySelector('#timeNumber'), async () => {
-        await endRound();
-      });
       isGuessable = true;
+      timer = startTimer(await getLobbyTime(), document.querySelector('#timeNumber'), async () => {
+        let popup = createPopup("#popup", "Time Out", "Points:" + await getPoints(), async () => {
+          await endRound();
+        });
+        popup();
+      });
     });
 
     mapButton.style.display = "none";
     nextButton.style.display = "none";
     panoMap = createMap(document.getElementById("panomap"), { lat: 0, lng: 0 }, 2);
     await setCoordinates();
-    console.log(await getLobbyTime());
     timer = startTimer(await getLobbyTime(), document.querySelector('#timeNumber'), async () => {
-      await endRound();
+      let popup = createPopup("#popup", "Time Out", "Points:" + await getPoints(), async () => {
+        await endRound();
+      });
+      popup();
     });
     document.getElementById('timeNav').style.display = 'block';
   } catch (error) {

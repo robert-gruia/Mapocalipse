@@ -4,7 +4,6 @@ from .models import SinglePlayerLobby, Coordinates
 from .utils import generateRandomCode, getLobbyRef
 from geopy.distance import geodesic
 import datetime
-
 import json
 
 # Create your views here.

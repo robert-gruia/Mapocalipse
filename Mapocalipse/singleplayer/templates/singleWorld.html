@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple Map</title>
+  <title>World Mode</title>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
   <link rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
@@ -14,6 +14,7 @@
 </head>
 
 <body>
+  {% include 'popup.html' %}
   <div class="navbarContainer">
     {% include 'horizontalNavbar.html' %}
   </div>
@@ -21,7 +22,6 @@
     <div id="pano"></div>
     <div id="map"></div>
 
-    {% include 'popup.html' %}
   
 
   <!-- prettier-ignore -->

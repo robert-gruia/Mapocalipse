@@ -1,7 +1,7 @@
 {% extends 'gamemode.html' %}
 {% load static %}
 
-{% block title %} Singleplayer {% endblock %}
+{% block title %} Multiplayer {% endblock %}
 
 
 {% block content %}
@@ -15,8 +15,7 @@
                     <h2 class="card__title">World Mode</h2>
                     <span class="card__description">Embark on a journey all over the world without any limit. The most
                         chill game mode.</span>
-                    <a href="../lobby" class="card__button">Create Lobby</a>
-                    <a href="../lobbies" class="card__button">Join Lobby</a>
+                    <a href="../worldLobby" class="card__button">Create Lobby</a>
                 </div>
             </article>
 
@@ -27,17 +26,7 @@
                     <h2 class="card__title">Time Limit Mode</h2>
                     <span class="card__description">You want a more challenging game mode? Then this is the right
                         choice!</span>
-                    <a href="../timelimit" class="card__button">Play</a>
-                </div>
-            </article>
-            <article class="card__article">
-                <img src="{% static 'game/imgs/italy.jpg' %}" alt="image" class="card__img">
-
-                <div class="card__data">
-                    <h2 class="card__title">Italy</h2>
-                    <span class="card__description">Embark in your beautiful journey in Italy! You'll see all from the
-                        Sicily island in the south to the Alps in the north. </span>
-                    <a href="../country" class="card__button">Play</a>
+                    <a href="../timelimitLobby" class="card__button">CreateLobby</a>
                 </div>
             </article>
         </div>

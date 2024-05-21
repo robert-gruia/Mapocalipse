@@ -124,8 +124,6 @@ async function initMap() {
       });
       isGuessable = false;
       let distance_score = await drawLine();
-      mapButton.style.display = "none";
-      nextButton.style.display = "block";
 
       // Zoom animation
       map.setZoom(5);
@@ -149,21 +147,23 @@ async function initMap() {
       overlay.style.alignItems = 'center';
       overlay.innerHTML = `<p style="margin: 0; color: white;">Points: ${distance_score.score} Distance: ${distance_score.distance}</p>`;
       document.getElementById('map').appendChild(overlay);
-    });
 
-    // Next button 
-    nextButton = createButton(map, "Next", async () => {
-      // If sessionCoordIndex is 4, show a popup
-      if (await getSessionCoordIndex() === 4) {
-        let popup = createPopup("#popup", async () => {
+      if (await getSessionCoordIndex() > 4) {
+        document.querySelector('#pointsNumber').innerText = await getPoints();
+        let popup = createPopup("#popup", "Game Over", "Points:" + await getPoints(), async () => {
           await endRound();
         });
         popup();
       }
-      let response = await changeLocation();
-      if (response === "over") {
-        window.location.href = "../home/";
+      else {
+        mapButton.style.display = "none";
+        nextButton.style.display = "block";
       }
+    });
+
+    // Next button 
+    nextButton = createButton(map, "Next", async () => {
+      let response = await changeLocation();
       if (document.getElementById('overlay')) document.getElementById('overlay').remove();
       await setCoordinates();
       let sessionIndex = await getSessionCoordIndex();

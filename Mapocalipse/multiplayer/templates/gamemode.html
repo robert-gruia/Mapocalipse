@@ -5,11 +5,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- css imports -->
     {% load static %}
-    <link rel="stylesheet" href="{% static 'game/css/navbarStyle.css' %}">
-    <link rel="stylesheet" href="{% static 'game/css/gamemodeStyle.css' %}">
+    <link rel="stylesheet" href="{% static 'multiplayer/css/navbarStyle.css' %}">
+    <link rel="stylesheet" href="{% static 'multiplayer/css/gamemodeStyle.css' %}">
     {% block css %} {% endblock %}
     <!-- js defer imports -->
-    <script type="module" src="{% static 'game/js/gamemodeScript.js' %}" defer></script>
+    <script type="module" src="{% static 'multiplayer/js/gamemodeScript.js' %}" defer></script>
     {% block jsdefer%} {% endblock%}
     <title>{% block title %} {% endblock %}</title>
 </head>
