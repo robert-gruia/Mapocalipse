@@ -21,10 +21,16 @@ function main()
     renderer.autoClear = false;
     renderer.setClearColor(0x00000, 0.0);
 
+    const loadingManager = new THREE.LoadingManager();
+    loadingManager.onLoad = function () {
+        animate();
+    };
+
+    const textureLoader = new THREE.TextureLoader(loadingManager);
 
     const earthgeometry = new THREE.SphereGeometry(0.6,32,32);
 
-    const eatrhmaterial = new THREE.MeshPhongMaterial({
+    const earthmaterial = new THREE.MeshPhongMaterial({
         roughness : 1,
         metalness:0,
         map: THREE.ImageUtils.loadTexture(earthMap1kUrl),
@@ -32,7 +38,7 @@ function main()
         bumpScale: 0.3,
     });
 
-    const earthmesh = new THREE.Mesh(earthgeometry,eatrhmaterial);
+    const earthmesh = new THREE.Mesh(earthgeometry,earthmaterial);
 
     scene.add(earthmesh);
 

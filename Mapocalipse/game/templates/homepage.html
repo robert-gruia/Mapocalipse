@@ -4,16 +4,16 @@
 <head>
     <title>Mapocalipse</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'game/planetEarth/css/earth.css' %}">
     <style>
         @font-face {
             font-family: 'Neo Sans Italic';
             src: url('{% static "game/fonts/NeoSans-BoldItalic.woff2" %}') format('woff2'),
-                 url('{% static "game/fonts/NeoSans-BoldItalic.woff" %}') format('woff');
+            url('{% static "game/fonts/NeoSans-BoldItalic.woff" %}') format('woff');
             font-weight: bold;
             font-style: normal;
         }
     </style>
+    <link rel="stylesheet" href="{% static 'game/planetEarth/css/earth.css' %}">
     <link rel="stylesheet" href="{% static 'game/css/homepage.css' %}">
 </head>
 
@@ -24,9 +24,9 @@
         const earthMap1kUrl = "{% static 'game/planetEarth/textures/earthMap1k.jpg' %}";
         const galaxyTextureUrl = "{% static 'game/planetEarth/textures/galaxy.png' %}";
         const spacularMapUrl = "{% static 'game/planetEarth/textures/specularMap.jpg' %}";
-    </script>
+        </script>
     <canvas id="c"></canvas>
-
+    
     <script src="{% static 'game/planetEarth/js/earth.js' %}"></script>
     <script src="{% static 'game/planetEarth/js/three.js' %}"></script>
     <nav>

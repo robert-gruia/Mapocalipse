@@ -10,6 +10,20 @@ body {
     background: #000;
 }
 
+.gradient-text .letter {
+    font-family: 'Neo Sans';
+    background: linear-gradient(to right, blue, white, blue);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+.gradient-text a {
+    color: inherit;
+    text-decoration: none;
+}
+
 nav {
     background: transparent;
     text-align: center;
@@ -24,7 +38,6 @@ nav {
 
 nav a {
     color: #fff;
-    /* Change this to the color you want */
     text-decoration: none;
     text-transform: uppercase;
     margin: 10px 0;
@@ -34,6 +47,5 @@ nav a {
 
 nav a:hover {
     color: #f00;
-    /* Change this to the color you want on hover */
     transform: scale(1.1);
 }

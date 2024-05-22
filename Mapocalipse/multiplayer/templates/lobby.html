@@ -1,0 +1,108 @@
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .centered-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .rounded-form {
+            width: 600px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .rounded-form input[type="number"],
+        .rounded-form input[type="checkbox"],
+        .rounded-form button {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-container label {
+            flex-grow: 1;
+            flex-shrink: 0;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            color: #333;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            flex-grow: 0;
+            flex-shrink: 1;
+            margin-left: 10px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .rounded-form button {
+            background-color: #007BFF;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            width: 45%;
+            font-size: 16px;
+        }
+
+        .rounded-form button:hover {
+            background-color: #0056b3;
+        }
+
+        .rounded-form h1 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .time-limit {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="centered-form">
+        <form class="rounded-form">
+            <h1>Create Lobby</h1>
+            <input type="number" name="rounds" placeholder="Number of Rounds" required min="1" max="10">
+            <div class="checkbox-container">
+                <label for="timelimit">Time Limit</label>
+                <input type="checkbox" name="timelimit" id="timelimit">
+            </div>
+            <input type="number" name="time" class="time-limit" placeholder="Time Limit (minutes)" min="1" max="10">
+            <div class="button-container">
+                <button type="submit">Create Lobby</button>
+                <button type="button">Join Lobby</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('timelimit').addEventListener('change', function () {
+            document.querySelector('.time-limit').style.display = this.checked ? 'block' : 'none';
+        });
+    </script>
+</body>
