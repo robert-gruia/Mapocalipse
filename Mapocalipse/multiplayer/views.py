@@ -39,35 +39,49 @@ def calculateDistance(point1, point2):
 def createLobby(request):
     if request.method == 'POST':
         lobby_id = generateRandomCode(6)
-        request.session['lobby_id'] = lobby_id
-        MultiPlayerLobby.createLobby(lobby_id)
-        LobbyUser.objects.addUserToLobby(user=request.user.user_id, lobby=lobby_id)
-        return HttpResponse('OK', status=200)
+        if request.body:
+            data = json.loads(request.body)
+            if data.get('rounds') is None:
+                lobby = MultiPlayerLobby.createLobby(lobby_id, time_duration=data.get('timelimit'))
+            elif data.get('time_duration') is None:
+                lobby = MultiPlayerLobby.createLobby(lobby_id, rounds=data.get('rounds'))
+            else:
+                lobby = MultiPlayerLobby.createLobby(lobby_id, rounds=data.get('rounds'), time_duration=data.get('timelimit'))
+            request.session['lobby_id'] = lobby_id
+            LobbyUser.addUserToLobby(user=request.user, lobby=lobby)
+            return HttpResponse('OK', status=200)
+        else:
+            return JsonResponse({"error": "JSON doesn't exist."}, status=400)
     else:
         return JsonResponse({"error": "POST request required."}, status=400)
 
+def removeAllFromLobby(request):
+    users = LobbyUser.objects.filter(lobby=getLobbyRef(request))
+    for user in users:
+        user.delete()
+    
 def deleteLobby(request):
     if request.method == 'POST':
         lobby_id = request.session.get('lobby_id')
+        removeAllFromLobby(request)
         lobby = getLobbyRef(lobby_id)
         lobby.delete()
         return HttpResponse('OK', status=200)
     else:
         return JsonResponse({"error": "POST request required."}, status=400)
-    
+
 def joinLobby(request):
     if request.method == 'POST':
         lobby_id = request.POST.get('lobby_id')
         request.session['lobby_id'] = lobby_id
-        LobbyUser.objects.addUserToLobby(user=request.user.user_id, lobby=lobby_id)
+        LobbyUser.addUserToLobby(user=request.user, lobby=getLobbyRef(request))
         return HttpResponse('OK', status=200)
     else:
         return JsonResponse({"error": "POST request required."}, status=400)
     
 def leaveLobby(request):
     if request.method == 'POST':
-        lobby_id = request.session.get('lobby_id')
-        user = LobbyUser.objects.get(user=request.user.user_id, lobby=lobby_id)
+        user = LobbyUser.objects.get(user=request.user, lobby=getLobbyRef(request))
         user.delete()
         return HttpResponse('OK', status=200)
     else:
@@ -94,16 +108,14 @@ def setRoundAsFinished(request):
         point1 = (lat1, lng1)
         point2 = (lat2, lng2)
         score_distance = calculateDistance(point1, point2)
-        user = LobbyUser.objects.get(user=request.user.user_id, lobby=lobby_id)
+        user = LobbyUser.objects.get(user=request.user, lobby=getLobbyRef(request))
         user.points += score_distance['score']
         user.round_distance = score_distance['distance']
         user.round_finished = True
         user.save()
 
-        # Check if all users have finished
-        users = LobbyUser.objects.filter(lobby=lobby_id)
+        users = LobbyUser.objects.filter(lobby=getLobbyRef(request))
         if all(user.round_finished for user in users):
-            # All users have finished, send a WebSocket message
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
                 f"lobby_{lobby_id}",
@@ -119,16 +131,14 @@ def setRoundAsFinished(request):
 
 def getUserPoints(request):
     if request.method == 'POST':
-        lobby_id = request.session.get('lobby_id')
-        user = LobbyUser.objects.get(user=request.user.user_id, lobby=lobby_id)
+        user = LobbyUser.objects.get(user=request.user, lobby=getLobbyRef(request))
         return JsonResponse({"points": user.points}, status=200)
     else:
         return JsonResponse({"error": "POST request required."}, status=400)
 
 def getUserDistance(request):
     if request.method == 'POST':
-        lobby_id = request.session.get('lobby_id')
-        user = LobbyUser.objects.get(user=request.user.user_id, lobby=lobby_id)
+        user = LobbyUser.objects.get(user=request.user, lobby=getLobbyRef(request))
         return JsonResponse({"distance": user.round_distance}, status=200)
     else:
         return JsonResponse({"error": "POST request required."}, status=400)

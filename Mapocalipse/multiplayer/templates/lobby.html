@@ -23,7 +23,6 @@
         }
 
         .rounded-form input[type="number"],
-        .rounded-form input[type="checkbox"],
         .rounded-form button {
             width: 100%;
             margin-bottom: 10px;
@@ -36,6 +35,7 @@
         .checkbox-container {
             display: flex;
             align-items: center;
+            margin-bottom: 1vh;
         }
 
         .checkbox-container label {
@@ -47,15 +47,13 @@
             color: #333;
         }
 
-        .checkbox-container input[type="checkbox"] {
-            flex-grow: 0;
-            flex-shrink: 1;
-            margin-left: 10px;
-        }
-
         .button-container {
             display: flex;
             justify-content: space-between;
+        }
+
+        .rounded-form{
+            width: 30vw;
         }
 
         .rounded-form button {
@@ -77,32 +75,122 @@
             margin-bottom: 20px;
         }
 
-        .time-limit {
-            display: none;
+
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #2196F3;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
         }
     </style>
 </head>
 
 <body>
-    <div class="centered-form">
+    <div class="centered-form createForm">
         <form class="rounded-form">
             <h1>Create Lobby</h1>
-            <input type="number" name="rounds" placeholder="Number of Rounds" required min="1" max="10">
+            <input type="number" name="rounds" placeholder="Number of Rounds(1-10)" required min="1" max="10">
             <div class="checkbox-container">
                 <label for="timelimit">Time Limit</label>
-                <input type="checkbox" name="timelimit" id="timelimit">
+                <div class="toggle">
+                    <input type="checkbox" name="timelimit" id="timelimit">
+                    <span class="slider"></span>
+                </div>
             </div>
-            <input type="number" name="time" class="time-limit" placeholder="Time Limit (minutes)" min="1" max="10">
+            <input type="number" name="time" class="time-limit" placeholder="Time Limit (minutes(1-10))" min="1" max="10">
             <div class="button-container">
-                <button type="submit">Create Lobby</button>
-                <button type="button">Join Lobby</button>
+                <button id="create-lobby-button">Create Lobby</button>
+                <button id="join-button">Join Lobby</button>
             </div>
         </form>
     </div>
 
+    <div class="centered-form joinForm" style="display:none;">
+        <form class="rounded-form">
+            <h1>Join Lobby</h1>
+            <input type="text" name="rounds" placeholder="#000000" maxlength="7">
+            <div class="button-container">
+                <button id="join-lobby-button">Join</button>
+                <button id="create-button">Create Lobby</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="centered-form lobbyForm" style="display:none;">
+    </div>
+
     <script>
-        document.getElementById('timelimit').addEventListener('change', function () {
-            document.querySelector('.time-limit').style.display = this.checked ? 'block' : 'none';
+        var toggle = document.querySelector('.toggle');
+        var checkbox = document.querySelector('.toggle input');
+        var timeLimit = document.querySelector('.time-limit');
+        
+        timeLimit.disabled = true;
+        toggle.addEventListener('click', function () {
+            checkbox.checked = !checkbox.checked;
+            timeLimit.disabled = !checkbox.checked;
+        });
+
+        document.getElementById('create-button').addEventListener('click', function (event) {
+            event.preventDefault();
+            document.querySelector('.createForm').style.display = 'flex';
+            document.querySelector('.joinForm').style.display = 'none';
+        });
+        document.getElementById('join-button').addEventListener('click', function (event) {
+            event.preventDefault();
+            document.querySelector('.joinForm').style.display = 'flex';
+            document.querySelector('.createForm').style.display = 'none';
+        });
+        document.getElementById('create-lobby-button').addEventListener('click', async function (event) {
+            event.preventDefault();
+            var rounds = document.querySelector('.createForm input[name="rounds"]').value;
+            var timelimit = document.querySelector('.createForm input[name="timelimit"]').checked;
+            var time = document.querySelector('.createForm input[name="time"]').value;
+            try{
+                await createLobby(rounds, timelimit);
+
+
+            }
+            catch(err){
+                console.log(err);
+            }
         });
     </script>
 </body>

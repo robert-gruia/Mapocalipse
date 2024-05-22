@@ -1,5 +1,7 @@
 import datetime
 from django.db import models
+from django.conf import settings
+
 
 
 class GameMode(models.TextChoices):
@@ -16,14 +18,18 @@ class MultiPlayerLobby(models.Model):
     )
     coordinatesindex = models.IntegerField(default=0)
     time_duration = models.DurationField(default=datetime.timedelta(minutes=5))
+    rounds = models.IntegerField(default=5)
 
     @classmethod
-    def createLobby(cls, lobby_id):
-        lobby = cls(lobby_id=lobby_id)
+    def createLobby(cls, lobby_id, rounds = 5, time_duration = None):
+        if time_duration is not None:
+            lobby = cls(lobby_id=lobby_id, rounds=rounds, time_duration=datetime.timedelta(seconds=time_duration))
+        else:
+            lobby = cls(lobby_id=lobby_id, rounds=rounds)
         lobby.save()
         return lobby
     
-    class Meta:
+    class Meta:     
         db_table = 'multiplayer_lobbies'
 
 
@@ -45,7 +51,7 @@ class Coordinates(models.Model):
 
 class LobbyUser(models.Model):
     lobby_user_id = models.AutoField(primary_key=True)
-    user = models.CharField(max_length=50)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, max_length=50, on_delete=models.DO_NOTHING)
     lobby = models.ForeignKey(MultiPlayerLobby, on_delete=models.CASCADE)
     round_finished = models.BooleanField(default=False)
     points = models.IntegerField(default=0)
@@ -53,9 +59,9 @@ class LobbyUser(models.Model):
 
     @classmethod
     def addUserToLobby(cls, user, lobby):
-        user = cls(user=user, lobby=lobby)
-        user.save()
-        return user
+        lobby_user = cls(user=user, lobby=lobby)
+        lobby_user.save()
+        return lobby_user
 
     class Meta:
         db_table = 'lobby_users'
