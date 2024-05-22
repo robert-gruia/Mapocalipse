@@ -7,6 +7,7 @@ Login
 
 {% block css %}
 <link rel="stylesheet" type="text/css" href="{% static 'authentication/css/login.css' %}">
+<link rel="stylesheet" href="{% static 'game/planetEarth/css/earth.css' %}">
 {% endblock %}
 
 {% block js %}
@@ -16,6 +17,26 @@ Login
 
 
 {% block content %}
+<style>
+    @font-face {
+        font-family: 'Neo Sans';
+        src: url('{% static "game/fonts/NeoSans.woff2" %}') format('woff2'),
+        url('{% static "game/fonts/NeoSans.woff" %}') format('woff');
+        font-weight: lighter;
+        font-style: normal;
+    }
+</style>
+<script>
+    const earthBumpUrl = "{% static 'game/planetEarth/textures/earthBump.jpg' %}";
+    const earthCloudUrl = "{% static 'game/planetEarth/textures/earthCloud.png' %}";
+    const earthMap1kUrl = "{% static 'game/planetEarth/textures/earthMap1k.jpg' %}";
+    const galaxyTextureUrl = "{% static 'game/planetEarth/textures/galaxy.png' %}";
+    const spacularMapUrl = "{% static 'game/planetEarth/textures/specularMap.jpg' %}";
+</script>
+<canvas id="c"></canvas>
+
+<script src="{% static 'game/planetEarth/js/earth.js' %}"></script>
+<script src="{% static 'game/planetEarth/js/three.js' %}"></script>
 <div class="login wrapper">
     <form action="../login/">
         <h2>Login</h2>
@@ -26,13 +47,6 @@ Login
         <div class="input-field">
             <input type="password" id="loginPassword" name="password" required>
             <label>Password</label>
-        </div>
-        <div class="forget">
-            <label for="remember">
-                <input type="checkbox" id="remember">
-                <p>Remember me</p>
-            </label>
-            <a href="#">Forgot password?</a>
         </div>
         <button type="submit" id="loginButton">Log In</button>
         <div class="changer">

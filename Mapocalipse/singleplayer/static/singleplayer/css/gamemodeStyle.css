@@ -1,4 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap");
+@font-face {
+  font-family: 'Neo Sans';
+  src: url('{% static "game/fonts/NeoSans-Bold.woff2" %}') format('woff2'),
+       url('{% static "game/fonts/NeoSans-Bold.woff" %}') format('woff');
+  font-weight: bold;
+  font-style: normal;
+}
 
 :root {
   --first-color: #f8f4f4;
@@ -6,7 +13,7 @@
   --text-color: #7c7c7c;
   --body-color: #f2f2f2;
   --container-color: rgba(45, 36, 62, 0.8);
-  --body-font: "Poppins", sans-serif;
+  --body-font: 'Neo Sans';
   --h2-font-size: 1.25rem;
   --small-font-size: .9rem;
 }

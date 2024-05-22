@@ -5,31 +5,9 @@
 
 
 {% block content %}
-<div class="gamemodes">
-    <div class="container">
-        <div class="card__container">
-            <article class="card__article">
-                <img src="{% static 'game/imgs/world.jpg' %}" alt="image" class="card__img">
-
-                <div class="card__data">
-                    <h2 class="card__title">World Mode</h2>
-                    <span class="card__description">Embark on a journey all over the world without any limit. The most
-                        chill game mode.</span>
-                    <a href="../worldLobby" class="card__button">Create Lobby</a>
-                </div>
-            </article>
-
-            <article class="card__article">
-                <img src="{% static 'game/imgs/timelimit.jpg' %}" alt="image" class="card__img">
-
-                <div class="card__data">
-                    <h2 class="card__title">Time Limit Mode</h2>
-                    <span class="card__description">You want a more challenging game mode? Then this is the right
-                        choice!</span>
-                    <a href="../timelimitLobby" class="card__button">CreateLobby</a>
-                </div>
-            </article>
-        </div>
-    </div>
+<div class="header"></div>
+<div class="buttons">
+    <a href="../worldLobby">Create Lobby</a>
+    <a href="../joinLobby">Join Lobby</a>
 </div>
 {% endblock %}

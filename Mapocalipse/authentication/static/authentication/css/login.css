@@ -4,7 +4,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Open Sans", sans-serif;
+    font-family: "Neo Sans", sans-serif;
 }
 
 body {
@@ -34,6 +34,11 @@ body::before {
     border: 1px solid rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(9px);
     -webkit-backdrop-filter: blur(9px);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
 }
 
 form {
