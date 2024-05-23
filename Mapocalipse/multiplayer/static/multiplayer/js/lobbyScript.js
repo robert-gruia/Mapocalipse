@@ -5,7 +5,7 @@ async function init() {
     let url;
     const svService = new google.maps.StreetViewService();
 
-    async function initialize(host) {
+    async function initialize() {
         let lobbyId = await getLobbyId();
         url = 'ws://' + window.location.host + '/ws/multiplayer/' + lobbyId + '/startGame/';
 
@@ -15,6 +15,7 @@ async function init() {
             console.log(data);
             if (data.message === 'Start Game') {
                 window.location.href = '/multiplayer/world/';
+                this.close();
             }
             else if (data.message === 'Connected to group') {
                 let users = await getLobbyUsers();
@@ -58,10 +59,12 @@ async function init() {
         var rounds = document.querySelector('.createForm input[name="rounds"]').value;
         var timelimit = document.querySelector('.createForm input[name="timelimit"]').checked;
         var time = document.querySelector('.createForm input[name="time"]').value;
+        console.log(time);
         try {
             document.querySelector('.lobbyForm').style.display = 'flex';
             document.querySelector('.createForm').style.display = 'none';
-            await createLobby(rounds, timelimit);
+            if(time !== '') await createLobby(rounds, timelimit, time);
+            else await createLobby(rounds, timelimit);
             document.getElementById('lobby-code').innerHTML = 'Invite Code: #' + await getLobbyId();
             let users = await getLobbyUsers();
             let userHTML = users.map(user => `
@@ -73,7 +76,7 @@ async function init() {
 
             document.querySelector('.user-list').innerHTML = userHTML;
             await generateValidCoordinates(svService);
-            const startGameSocket = await initialize(false);
+            const startGameSocket = await initialize();
             startGameSocket.addEventListener('open', function (event) {
                 startGameSocket.send(JSON.stringify({ message: 'Connected to group' }));
             });
@@ -106,7 +109,7 @@ async function init() {
             `).join('');
 
             document.querySelector('.user-list').innerHTML = userHTML;
-            const startGameSocket = await initialize(false);
+            const startGameSocket = await initialize();
             startGameSocket.addEventListener('open', function (event) {
                 startGameSocket.send(JSON.stringify({ message: 'Connected to group' }));
             });

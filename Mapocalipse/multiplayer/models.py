@@ -24,13 +24,14 @@ class MultiPlayerLobby(models.Model):
         default=GameMode.WORLD
     )
     coordinatesindex = models.IntegerField(default=0)
-    time_duration = models.DurationField(default=datetime.timedelta(minutes=5))
+    time_duration = models.DurationField(default=datetime.timedelta(minutes=0))
     rounds = models.IntegerField(default=5)
 
     @classmethod
     def createLobby(cls, lobby_id, rounds = 5, time_duration = None):
         if time_duration is not None:
-            lobby = cls(lobby_id=lobby_id, rounds=rounds, time_duration=datetime.timedelta(seconds=time_duration))
+            lobby = cls(lobby_id=lobby_id, rounds=rounds, time_duration=datetime.timedelta(minutes=time_duration))
+            lobby.gamemode = GameMode.TIMELIMIT
         else:
             lobby = cls(lobby_id=lobby_id, rounds=rounds)
         lobby.save()

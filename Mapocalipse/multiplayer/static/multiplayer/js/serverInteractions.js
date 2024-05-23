@@ -1,6 +1,6 @@
 const generateValidCoordinates = async (svService) => {
     let validCoordinates = [];
-    while (validCoordinates.length < 5) {
+    while (validCoordinates.length < await getLobbyRounds()) {
         const promises = Array.from({ length: 20 }, () => new Promise((resolve) => {
             svService.getPanorama({ location: getRandomArbitrary(), radius: 1000000 }, (data, status) => {
                 if (status === 'OK' && data.links.length > 2) {
@@ -16,16 +16,17 @@ const generateValidCoordinates = async (svService) => {
 };
 
 
-const createLobby = async (rounds = '', timelimit = '') => {
+const createLobby = async (rounds = '', timelimit = '', time = 0) => {
     let body;
-    if (rounds !== '' && timelimit !== '') {
-        body = JSON.stringify({ 'rounds': rounds, 'timelimit': timelimit });
+    console.log(time);
+    if (rounds !== '' && time !== 0) {
+        body = JSON.stringify({ 'rounds': rounds, 'timelimit': timelimit, 'time': time});
     }
     else if (rounds !== '') {
         body = JSON.stringify({ 'rounds': rounds });
     }
-    else if (timelimit !== '') {
-        body = JSON.stringify({ 'timelimit': timelimit });
+    else if (timelimit !== 0) {
+        body = JSON.stringify({ 'timelimit': timelimit, 'time': time});
     }
 
     const response = await fetch('../createLobby/', {
@@ -122,37 +123,6 @@ const setRoundAsFinished = async (lat1, lng1, lat2, lng2) => {
 
 };
 
-const getUserPoints = async () => {
-    const response = await fetch('../getUserPoints/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken'),
-        },
-    });
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return await response.json();
-};
-
-const getUserDistance = async () => {
-    const response = await fetch('../getUserDistance/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken'),
-        },
-    });
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return await response.json();
-};
 
 const getLobbyId = async () => {
     const response = await fetch('../getLobbyId/', {
@@ -216,8 +186,8 @@ const getCoordinatesIndex = async () => {
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
-
-    return await response.json().index;
+    const data = await response.json();
+    return data.index;
 };
 
 const getPoints = async () => {
@@ -232,8 +202,24 @@ const getPoints = async () => {
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
+    const data = await response.json();
+    return data.points;
+};
 
-    return await response.json().points;
+const getDistance = async () => {
+    const response = await fetch('../getDistance/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.distance;
 };
 
 const getUserRole = async () => {
@@ -248,6 +234,56 @@ const getUserRole = async () => {
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
+    const data = await response.json();
 
-    return await response.json().role;
+    return data.role;
 };
+
+
+const getLobbyRounds = async () => {
+    const response = await fetch('../getLobbyRounds/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+
+    return data.rounds;
+};
+
+const setRoundAsNotFinished = async () => {
+    const response = await fetch('../setRoundAsNotFinished/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+}
+
+const getLobbyTime = async () => {
+    const response = await fetch('../getLobbyTime/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.time;
+}

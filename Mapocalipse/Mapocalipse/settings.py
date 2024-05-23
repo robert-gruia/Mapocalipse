@@ -145,3 +145,5 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
+
+CHANNELS_WEBSOCKET_CONNECT_TIMEOUT = 60 * 60 * 24 * 365
