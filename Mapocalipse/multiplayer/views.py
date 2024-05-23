@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
-from .models import MultiPlayerLobby, Coordinates, LobbyUser
+from .models import Coordinates, MultiPlayerLobby, LobbyUser
 from .utils import generateRandomCode, getLobbyRef
 from geopy.distance import geodesic
 import json
@@ -11,14 +11,8 @@ from asgiref.sync import async_to_sync
 def home(request):
     return render(request, 'multiplayerHome.html')
 
-def worldLobby(request):
-    return render(request, 'worldLobby.html')
-
-def timeLimitLobby(request):
-    return render(request, 'timeLimitLobby.html')
-
-def joinLobby(request):
-    return render(request, 'joinLobby.html')
+def world(request):
+    return render(request, 'world.html')
 
 def calculateDistance(point1, point2):
         distance = geodesic(point1, point2).kilometers
@@ -48,7 +42,7 @@ def createLobby(request):
             else:
                 lobby = MultiPlayerLobby.createLobby(lobby_id, rounds=data.get('rounds'), time_duration=data.get('timelimit'))
             request.session['lobby_id'] = lobby_id
-            LobbyUser.addUserToLobby(user=request.user, lobby=lobby)
+            LobbyUser.addUserToLobby(user=request.user, lobby=lobby, host=True)
             return HttpResponse('OK', status=200)
         else:
             return JsonResponse({"error": "JSON doesn't exist."}, status=400)
@@ -72,9 +66,14 @@ def deleteLobby(request):
 
 def joinLobby(request):
     if request.method == 'POST':
-        lobby_id = request.POST.get('lobby_id')
+        data = json.loads(request.body)
+        lobby_id = data.get('lobby_id')
         request.session['lobby_id'] = lobby_id
-        LobbyUser.addUserToLobby(user=request.user, lobby=getLobbyRef(request))
+        try:
+            lobby = MultiPlayerLobby.objects.get(lobby_id=lobby_id)
+            LobbyUser.addUserToLobby(user=request.user, lobby=lobby)
+        except MultiPlayerLobby.DoesNotExist:
+            return JsonResponse({"error": "Lobby doesn't exist."}, status=400)
         return HttpResponse('OK', status=200)
     else:
         return JsonResponse({"error": "POST request required."}, status=400)
@@ -90,8 +89,8 @@ def leaveLobby(request):
 def getLobbyUsers(request):
     if request.method == 'POST':
         lobby_id = request.session.get('lobby_id')
-        users = LobbyUser.objects.filter(lobby=lobby_id)
-        return JsonResponse({"users": users}, status=200)
+        lobby_users = LobbyUser.objects.filter(lobby=lobby_id).values('user__username', 'role')
+        return JsonResponse(list(lobby_users), status=200, safe=False)
     else:
         return JsonResponse({"error": "POST request required."}, status=400)
            
@@ -140,5 +139,26 @@ def getUserDistance(request):
     if request.method == 'POST':
         user = LobbyUser.objects.get(user=request.user, lobby=getLobbyRef(request))
         return JsonResponse({"distance": user.round_distance}, status=200)
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
+    
+def getLobbyId(request):
+    return JsonResponse({"lobby_id": request.session.get('lobby_id')}, status=200)
+
+def addCoordinates(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        coordinates = data
+        lobby = getLobbyRef(request)
+
+        if coordinates and len(coordinates) == 5:
+            for coord in coordinates:
+                lat = coord.get('lat')
+                lng = coord.get('lng')
+                Coordinates.createCoordinate(lat, lng, lobby)
+
+            return HttpResponse('OK', status=200)
+        else:
+            return JsonResponse({"error": "Invalid coordinates data. Expected a list of 5 coordinates."}, status=400)
     else:
         return JsonResponse({"error": "POST request required."}, status=400)

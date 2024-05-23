@@ -65,21 +65,6 @@
                             </form>
                         </div>
                     </article>
-                    <article class="card__article">
-                        <img src="{% static 'game/imgs/italy.jpg' %}" alt="image" class="card__img">
-
-                        <div class="card__data">
-                            <h2 class="card__title">Italy</h2>
-                            <span class="card__description">Embark in your beautiful journey in Italy! You'll see all
-                                from the
-                                Sicily island in the south to the Alps in the north. </span>
-                            <form method="POST" action="../country/" , class="no-background">
-                                {% csrf_token %}
-                                <a href="" onclick=" event.preventDefault(); this.parentNode.submit();"
-                                    class="card__button">Play</a>
-                            </form>
-                        </div>
-                    </article>
                 </div>
             </div>
         </div>
@@ -97,8 +82,6 @@
                             <img src="{% static 'game/imgs/world.jpg' %}" alt="image" class="card__img">
                             {% elif lobby.gamemode == 'timelimit' %}
                             <img src="{% static 'game/imgs/timelimit.jpg' %}" alt="image" class="card__img">
-                            {% else %}
-                            <img src="{% static 'game/imgs/italy.jpg' %}" alt="image" class="card__img">
                             {% endif %}
 
                             <div class="card__data">
@@ -117,16 +100,6 @@
                                 <span class="card__description">Round: {{lobby.coordinatesindex}}/5 <br>Points:
                                     {{lobby.points}}</span>
                                 <form method="POST" action="../timelimit/" , class="no-background">
-                                    <input type="hidden" name="lobby_id" value="{{lobby.lobby_id}}">
-                                    {% csrf_token %}
-                                    <a href="" onclick=" event.preventDefault(); this.parentNode.submit();"
-                                        class="card__button">Play</a>
-                                </form>
-                                {% else %}
-                                <h2 class="card__title">Italy Mode</h2>
-                                <span class="card__description">Round: {{lobby.coordinatesindex}}/5 <br>Points:
-                                    {{lobby.points}}</span>
-                                <form method="POST" action="../country/" , class="no-background">
                                     <input type="hidden" name="lobby_id" value="{{lobby.lobby_id}}">
                                     {% csrf_token %}
                                     <a href="" onclick=" event.preventDefault(); this.parentNode.submit();"

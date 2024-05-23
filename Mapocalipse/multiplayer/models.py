@@ -1,12 +1,19 @@
 import datetime
 from django.db import models
 from django.conf import settings
+from django.views import View
+from django.http import JsonResponse
 
 
 
 class GameMode(models.TextChoices):
     WORLD = 'world',
     TIMELIMIT = 'timelimit',
+
+
+class Roles(models.TextChoices):
+    HOST = 'host',
+    PLAYER = 'player',
 
 
 class MultiPlayerLobby(models.Model):
@@ -56,10 +63,18 @@ class LobbyUser(models.Model):
     round_finished = models.BooleanField(default=False)
     points = models.IntegerField(default=0)
     round_distance = models.FloatField(default=0)
+    role = models.CharField(
+        max_length=6,
+        choices=Roles.choices,
+        default=Roles.PLAYER
+    )
 
     @classmethod
-    def addUserToLobby(cls, user, lobby):
-        lobby_user = cls(user=user, lobby=lobby)
+    def addUserToLobby(cls, user, lobby, host=False):
+        if host:
+            lobby_user = cls(user=user, lobby=lobby, role=Roles.HOST)
+        else:
+            lobby_user = cls(user=user, lobby=lobby)
         lobby_user.save()
         return lobby_user
 

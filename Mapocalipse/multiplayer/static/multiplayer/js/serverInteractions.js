@@ -1,15 +1,35 @@
+const generateValidCoordinates = async (svService) => {
+    let validCoordinates = [];
+    console.log('Generating valid coordinates');
+    while (validCoordinates.length < 5) {
+        const promises = Array.from({ length: 20 }, () => new Promise((resolve) => {
+            svService.getPanorama({ location: getRandomArbitrary(), radius: 1000000 }, (data, status) => {
+                if (status === 'OK' && data.links.length > 2) {
+                    console.log('woohooo')
+                    validCoordinates.push(data.location.latLng);
+                }
+                resolve();
+            });
+        }));
+        await Promise.allSettled(promises);
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    await addCoordinates(validCoordinates.slice(0, 5));
+};
+
+
 const createLobby = async (rounds = '', timelimit = '') => {
     let body;
-    if(rounds !== '' && timelimit !== '') {
-        body = JSON.stringify({'rounds': rounds, 'timelimit': timelimit});
+    if (rounds !== '' && timelimit !== '') {
+        body = JSON.stringify({ 'rounds': rounds, 'timelimit': timelimit });
     }
-    else if(rounds !== ''){
-        body = JSON.stringify({'rounds': rounds});
+    else if (rounds !== '') {
+        body = JSON.stringify({ 'rounds': rounds });
     }
-    else if(timelimit !== ''){
-        body = JSON.stringify({'timelimit': timelimit});
+    else if (timelimit !== '') {
+        body = JSON.stringify({ 'timelimit': timelimit });
     }
-    
+
     const response = await fetch('../createLobby/', {
         method: 'POST',
         headers: {
@@ -50,8 +70,10 @@ const joinLobby = async (lobbyId) => {
     });
 
     if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(errorData.error);
     }
+
 };
 
 const leaveLobby = async () => {
@@ -81,8 +103,9 @@ const getLobbyUsers = async () => {
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
-
-    return response.json();
+    const data = await response.json();
+    console.log(data);
+    return data;
 };
 
 const setRoundAsFinished = async (lat1, lng1, lat2, lng2) => {
@@ -132,3 +155,35 @@ const getUserDistance = async () => {
 
     return response.json();
 };
+
+const getLobbyId = async () => {
+    const response = await fetch('../getLobbyId/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.lobby_id;
+}
+
+const addCoordinates = async (validCoordinates) => {
+    const response = await fetch('../addCoordinates/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: JSON.stringify(validCoordinates),
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+}

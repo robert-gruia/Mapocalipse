@@ -12,4 +12,4 @@ for /f %%i in (requirements.txt) do (
 )
 
 cd Mapocalipse
-python manage.py runserver
+uvicorn Mapocalipse.asgi:application
