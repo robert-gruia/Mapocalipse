@@ -5,6 +5,22 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- css imports -->
     {% load static %}
+    <style>
+        @font-face {
+            font-family: 'Neo Sans';
+            src: url('{% static "game/fonts/NeoSans.woff" %}') format('woff2'),
+                url('{% static "game/fonts/NeoSans.woff2" %}') format('woff');
+            font-weight: bold;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Neo Sans Bold';
+            src: url('{% static "game/fonts/NeoSans-Bold.woff" %}') format('woff2'),
+                url('{% static "game/fonts/NeoSans-Bold.woff2" %}') format('woff');
+            font-weight: bold;
+            font-style: normal;
+        }
+    </style>
     <link rel="stylesheet" href="{% static 'multiplayer/css/navbarStyle.css' %}">
     <link rel="stylesheet" href="{% static 'multiplayer/css/gamemodeStyle.css' %}">
     {% block css %} {% endblock %}

@@ -1,7 +1,15 @@
 @echo off
-REM Activation of the virtual environment
+
+if not exist .venv (
+    python -m venv .venv
+)
+
 call .venv\Scripts\activate
 
-REM Start the server
+for /f %%i in (requirements.txt) do (
+    pip show %%i >nul 2>&1
+    if errorlevel 1 pip install %%i
+)
+
 cd Mapocalipse
 python manage.py runserver
