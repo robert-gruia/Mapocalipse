@@ -33,6 +33,7 @@ def calculateDistance(point1, point2):
 def createLobby(request):
     if request.method == 'POST':
         lobby_id = generateRandomCode(6)
+        print(lobby_id)
         if request.body:
             data = json.loads(request.body)
             if data.get('rounds') is None:
@@ -42,6 +43,7 @@ def createLobby(request):
             else:
                 lobby = MultiPlayerLobby.createLobby(lobby_id, rounds=data.get('rounds'), time_duration=data.get('timelimit'))
             request.session['lobby_id'] = lobby_id
+            print(request.session.get('lobby_id'))
             LobbyUser.addUserToLobby(user=request.user, lobby=lobby, host=True)
             return HttpResponse('OK', status=200)
         else:
@@ -115,11 +117,12 @@ def setRoundAsFinished(request):
 
         users = LobbyUser.objects.filter(lobby=getLobbyRef(request))
         if all(user.round_finished for user in users):
+            getLobbyRef(request).coordinatesindex += 1
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
                 f"lobby_{lobby_id}",
                 {
-                    "type": "all_users_finished",
+                    "message": "all_users_finished",
                 }
             )
 
@@ -153,6 +156,7 @@ def addCoordinates(request):
 
         if coordinates and len(coordinates) == 5:
             for coord in coordinates:
+                print('wow')
                 lat = coord.get('lat')
                 lng = coord.get('lng')
                 Coordinates.createCoordinate(lat, lng, lobby)
@@ -162,3 +166,36 @@ def addCoordinates(request):
             return JsonResponse({"error": "Invalid coordinates data. Expected a list of 5 coordinates."}, status=400)
     else:
         return JsonResponse({"error": "POST request required."}, status=400)
+    
+
+def getCoordinates(request):
+    if request.method == 'POST':
+        lobby = getLobbyRef(request)
+        coordinates = Coordinates.objects.filter(lobby=lobby).values('lat', 'lng')
+        return JsonResponse({"coords" : list(coordinates)[lobby.coordinatesindex]}, status=200, safe=False)
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
+    
+def getCoordinatesIndex(request):
+    if request.method == 'POST':
+        lobby = getLobbyRef(request)
+        return JsonResponse({"index": lobby.coordinatesindex}, status=200)
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
+    
+def getPoints(request):
+    if request.method == 'POST':
+        lobby = getLobbyRef(request)
+        points = LobbyUser.objects.filter(lobby=lobby, user=request.user).values('points')
+        return JsonResponse({'points': points}, status=200, safe=False)
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+
+def getUserRole(request):
+    if request.method == 'POST':
+        user = LobbyUser.objects.get(user=request.user, lobby=getLobbyRef(request))
+        return JsonResponse({"role": user.role}, status=200)
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
+    

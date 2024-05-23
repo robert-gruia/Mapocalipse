@@ -1,11 +1,9 @@
 const generateValidCoordinates = async (svService) => {
     let validCoordinates = [];
-    console.log('Generating valid coordinates');
     while (validCoordinates.length < 5) {
         const promises = Array.from({ length: 20 }, () => new Promise((resolve) => {
             svService.getPanorama({ location: getRandomArbitrary(), radius: 1000000 }, (data, status) => {
                 if (status === 'OK' && data.links.length > 2) {
-                    console.log('woohooo')
                     validCoordinates.push(data.location.latLng);
                 }
                 resolve();
@@ -137,7 +135,7 @@ const getUserPoints = async () => {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return response.json();
+    return await response.json();
 };
 
 const getUserDistance = async () => {
@@ -153,7 +151,7 @@ const getUserDistance = async () => {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return response.json();
+    return await response.json();
 };
 
 const getLobbyId = async () => {
@@ -187,3 +185,69 @@ const addCoordinates = async (validCoordinates) => {
     }
 
 }
+
+const getCoordinates = async () => {
+    const response = await fetch('../getCoordinates/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log(data);
+    return await data.coords;
+};
+
+const getCoordinatesIndex = async () => {
+    const response = await fetch('../getCoordinatesIndex/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json().index;
+};
+
+const getPoints = async () => {
+    const response = await fetch('../getPoints/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json().points;
+};
+
+const getUserRole = async () => {
+    const response = await fetch('../getUserRole/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json().role;
+};

@@ -14,4 +14,8 @@ urlpatterns = [
     path('getUserDistance/', views.getUserDistance, name='getUserDistance'),
     path('getLobbyId/', views.getLobbyId, name='getLobbyId'),
     path('addCoordinates/', views.addCoordinates, name='addCoordinates'),
+    path('getCoordinates/', views.getCoordinates, name='getCoordinates'),
+    path('getCoordinatesIndex/', views.getCoordinatesIndex, name='getCoordinatesIndex'),
+    path('getPoints/', views.getPoints, name='getPoints'),
+    path('getUserRole/', views.getUserRole, name='getUserRole'),
 ]

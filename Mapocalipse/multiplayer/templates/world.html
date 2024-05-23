@@ -4,21 +4,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple Map</title>
+  <title>World Mode</title>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+  <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
 
   {% load static %}
-  <link rel="stylesheet" href="{% static 'game/css/gameStyle.css' %}">
+  <link rel="stylesheet" href="{% static 'multiplayer/css/gameStyle.css' %}">
 </head>
 
 <body>
-  <div id="panomap"></div>
-  <div id="pano"></div>
-  <div id="map"></div>
+  {% include 'popup.html' %}
+  <div class="navbarContainer">
+    {% include 'horizontalNavbar.html' %}
+  </div>
+    <div id="panomap"></div>
+    <div id="pano"></div>
+    <div id="map"></div>
 
+  
 
   <!-- prettier-ignore -->
 
+  <!-- Google Maps API import -->
   <script>
     window.loadGoogleMapsApi = (g => {
       var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window;
@@ -38,9 +46,10 @@
       d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && h.then(() => d[l](f, ...n))
     })({ key: "AIzaSyCnVSQtfQXXdIxJOrd613xMj7qo91zMezI", v: "weekly" });
   </script>
-  <script src="{% static 'game/js/utils.js' %}"></script>
-  <script src="{% static 'game/js/mapLibrary.js' %}"></script>
-  <script src="{% static 'game/js/gameScript.js' %}"></script>
+  <script src="{% static 'multiplayer/js/utils.js' %}"></script>
+  <script src="{% static 'multiplayer/js/popup.js' %}"></script>
+  <script src="{% static 'multiplayer/js/serverInteractions.js' %}"></script>
+  <script src="{% static 'multiplayer/js/gameScript.js' %}"></script>
 
 
 </body>

@@ -10,18 +10,23 @@ async function init() {
         url = 'ws://' + window.location.host + '/ws/multiplayer/' + lobbyId + '/startGame/';
 
         const startGameSocket = new WebSocket(url);
-        startGameSocket.onmessage = (e) => {
+        startGameSocket.onmessage = async (e) => {
             let data = JSON.parse(e.data);
             console.log(data);
             if (data.message === 'Start Game') {
                 window.location.href = '/multiplayer/world/';
             }
-        }
+            else if (data.message === 'Connected to group') {
+                let users = await getLobbyUsers();
+                let userHTML = users.map(user => `
+                    <div class="user">
+                        <p>${user.user__username} - ${user.role}</p>
+                    </div>
+                    <hr>
+                `).join('');
 
-        if (host) {
-            startGameSocket.addEventListener('open', function (event) {
-                this.send(JSON.stringify({ message: 'Start Game' }));
-            });
+                document.querySelector('.user-list').innerHTML = userHTML;
+            }
         }
 
         return startGameSocket;
@@ -56,6 +61,8 @@ async function init() {
         try {
             document.querySelector('.lobbyForm').style.display = 'flex';
             document.querySelector('.createForm').style.display = 'none';
+            await createLobby(rounds, timelimit);
+            document.getElementById('lobby-code').innerHTML = 'Invite Code: #' + await getLobbyId();
             let users = await getLobbyUsers();
             let userHTML = users.map(user => `
                     <div class="user">
@@ -65,11 +72,14 @@ async function init() {
                 `).join('');
 
             document.querySelector('.user-list').innerHTML = userHTML;
-            await createLobby(rounds, timelimit);
             await generateValidCoordinates(svService);
+            const startGameSocket = await initialize(false);
+            startGameSocket.addEventListener('open', function (event) {
+                startGameSocket.send(JSON.stringify({ message: 'Connected to group' }));
+            });
             document.getElementById('start-game-button').addEventListener('click', async function (event) {
                 event.preventDefault();
-                const startGameSocket = initialize(true);
+                startGameSocket.send(JSON.stringify({ message: 'Start Game' }));
             });
         }
         catch (err) {
@@ -85,6 +95,7 @@ async function init() {
             const error = await joinLobby(code);
             document.querySelector('.lobbyForm').style.display = 'flex';
             document.querySelector('.joinForm').style.display = 'none';
+            document.getElementById('lobby-code').innerHTML = 'Invite Code: #' + await getLobbyId();
             document.getElementById('start-game-button').style.display = 'none';
             let users = await getLobbyUsers();
             let userHTML = users.map(user => `
@@ -93,9 +104,12 @@ async function init() {
             </div>
             <hr>
             `).join('');
-            
+
             document.querySelector('.user-list').innerHTML = userHTML;
-            const startGameSocket = initialize(false);
+            const startGameSocket = await initialize(false);
+            startGameSocket.addEventListener('open', function (event) {
+                startGameSocket.send(JSON.stringify({ message: 'Connected to group' }));
+            });
         }
         catch (err) {
             console.error('Error:', err.message);

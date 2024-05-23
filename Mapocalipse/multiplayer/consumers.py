@@ -11,10 +11,6 @@ class StartGameConsumer(AsyncWebsocketConsumer):
             self.lobby_group_name,
             self.channel_name
         )
-
-        await self.send(text_data=json.dumps({
-            'message': 'Connected to group' + self.lobby_group_name
-        }))
         
 
 
