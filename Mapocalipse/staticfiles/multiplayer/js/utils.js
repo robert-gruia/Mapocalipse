@@ -111,3 +111,12 @@ function startTimer(duration, display, callback = () => { }) {
         }
     };
 }
+
+
+function formatLobbyUsers(lobbyUsers) {
+    let formattedString = '';
+    for(let i = 0; i < lobbyUsers.length; i++) {
+        formattedString += `${i+1}. ${lobbyUsers[i].user__username}: ${lobbyUsers[i].points}\n`;
+    }
+    return formattedString;
+}

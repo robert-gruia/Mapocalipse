@@ -1,5 +1,13 @@
 {% load static %}
-<link href="https://fonts.googleapis.com/css?family=Montserrat:500&display=swap" rel="stylesheet">
+<style>
+    @font-face {
+        font-family: 'Neo Sans';
+        src: url('{% static "game/fonts/NeoSans-BoldItalic.woff" %}') format('woff2'),
+            url('{% static "game/fonts/NeoSans-BoldItalic.woff2" %}') format('woff');
+        font-weight: bold;
+        font-style: normal;
+    }
+</style>
 <link rel="stylesheet" href="{% static 'multiplayer/css/horizontalNavbarStyle.css' %}">
 <header>
     <p class="logo">MAPOCALIPSE</p>

@@ -20,4 +20,5 @@ urlpatterns = [
     path('getDistance/', views.getDistance, name='getDistance'),
     path('setRoundAsNotFinished/', views.setRoundAsNotFinished, name='setRoundAsNotFinished'), 
     path('getLobbyTime/', views.getLobbyTime, name='getLobbyTime'),
+    path('getLobbyUsersWithPoints/', views.getLobbyUsersWithPoints, name='getLobbyUsersWithPoints'),
 ]

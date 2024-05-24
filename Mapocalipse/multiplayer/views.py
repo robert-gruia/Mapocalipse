@@ -120,17 +120,13 @@ def setRoundAsFinished(request):
         rounds = data.get('rounds')
         coordIndex = getLobbyRef(request).coordinatesindex
         roundss = int(rounds) - 1
-        print("Coord", coordIndex)
-        print("Rounds", roundss)
-        print("Calc", coordIndex == roundss)
-        print("ALL", all(user.round_finished for user in users))
-        if coordIndex <= roundss and all(user.round_finished for user in users):
+        if coordIndex >= roundss and all(user.round_finished for user in users):
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
                 f"lobby_{lobby_id}",
                 {
                     "type": "start_message",
-                    "message": "Game Over",
+                    "message": "End Game",
                 }
             )
         elif all(user.round_finished for user in users):
@@ -138,6 +134,7 @@ def setRoundAsFinished(request):
             lobby.coordinatesindex += 1
             lobby.save()
             channel_layer = get_channel_layer()
+            print('helo')
             async_to_sync(channel_layer.group_send)(
                 f"lobby_{lobby_id}",
                 {
@@ -234,5 +231,13 @@ def getLobbyTime(request):
     if request.method == 'POST':
         lobby = getLobbyRef(request)
         return JsonResponse({"time": lobby.time_duration.total_seconds()}, status=200)
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+def getLobbyUsersWithPoints(request):
+    if request.method == 'POST':
+        lobby = getLobbyRef(request)
+        lobby_users = LobbyUser.objects.filter(lobby=lobby).order_by('-points').values('user__username', 'points')
+        return JsonResponse({"usersPoints" : list(lobby_users)}, status=200, safe=False)
     else:
         return JsonResponse({"error": "POST request required."}, status=400)

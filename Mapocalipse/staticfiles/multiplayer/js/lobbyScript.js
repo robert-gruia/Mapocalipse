@@ -63,7 +63,7 @@ async function init() {
         try {
             document.querySelector('.lobbyForm').style.display = 'flex';
             document.querySelector('.createForm').style.display = 'none';
-            if(time === '') await createLobby(rounds, timelimit, time);
+            if(time !== '') await createLobby(rounds, timelimit, time);
             else await createLobby(rounds, timelimit);
             document.getElementById('lobby-code').innerHTML = 'Invite Code: #' + await getLobbyId();
             let users = await getLobbyUsers();

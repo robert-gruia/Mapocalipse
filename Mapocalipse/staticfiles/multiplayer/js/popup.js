@@ -7,7 +7,7 @@ function createPopup(id, title = '', text = '', callback = async () => {}) {
     function openPopup() {
         popupNode.classList.add("active");
     }
-    overlay.addEventListener("click", callback);
-    closeBtn.addEventListener("click", callback);
+    overlay.addEventListener("click", () => callback());
+    closeBtn.addEventListener("click", () => callback());
     return openPopup;
 }

@@ -18,6 +18,7 @@ const generateValidCoordinates = async (svService) => {
 
 const createLobby = async (rounds = '', timelimit = '', time = 0) => {
     let body;
+    console.log(time);
     if (rounds !== '' && time !== 0) {
         body = JSON.stringify({ 'rounds': rounds, 'timelimit': timelimit, 'time': time});
     }
@@ -285,4 +286,22 @@ const getLobbyTime = async () => {
 
     const data = await response.json();
     return data.time;
+}
+
+const getLobbyUsersWithPoints = async () => {
+    const response = await fetch('../getLobbyUsersWithPoints/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log(data.usersPoints);
+    return data.usersPoints;
 }

@@ -19,11 +19,6 @@ body {
     display: inline-block;
 }
 
-.gradient-text a {
-    color: inherit;
-    text-decoration: none;
-}
-
 nav {
     background: transparent;
     text-align: center;
@@ -36,7 +31,8 @@ nav {
     text-align: center;
 }
 
-nav a {
+nav a,
+nav .header-title{
     color: #fff;
     text-decoration: none;
     text-transform: uppercase;
@@ -48,4 +44,9 @@ nav a {
 nav a:hover {
     color: #f00;
     transform: scale(1.1);
+}
+
+nav .header-title {
+    font-size: 3em;
+    font-weight: bold;
 }

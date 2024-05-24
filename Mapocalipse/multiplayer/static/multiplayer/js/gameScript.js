@@ -8,6 +8,7 @@ let randomLocationMarker;
 let map;
 let setCoordinates;
 let timer;
+let overlay;
 
 async function endRound() {
     await deleteLobby();
@@ -21,11 +22,15 @@ async function initialize() {
     const gameSocket = new WebSocket(url);
     gameSocket.onmessage = async (e) => {
         let data = JSON.parse(e.data);
-        console.log(data);
         if (data.message === 'End Game') {
+            let role = await getUserRole();
+            let pointsString = formatLobbyUsers(await getLobbyUsersWithPoints());
             this.close();
-            await endRound();
-            window.location.href = '/multiplayer/home/';
+            let popup = createPopup("#popup", "Game Over \n", pointsString, async () => {
+                if(role === 'host') await endRound();
+                else window.location.href = '/multiplayer/home/';
+            });
+            popup();
         }
         else if (data.message === 'all users finished') {
             const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
@@ -48,6 +53,9 @@ async function initialize() {
             let distance = await getDistance();
 
             // Create a transparent element with points and distance
+            if (overlay) {
+                overlay.remove();
+            }
             overlay = document.createElement('div');
             overlay.id = 'overlay';
             overlay.style.position = 'absolute';
@@ -84,8 +92,9 @@ async function initialize() {
             mapButton.style.display = "none";
             nextButton.style.display = "none";
             await setCoordinates();
+            let pointss = await getPoints();
             document.querySelector('#roundNumber').innerText = (await getCoordinatesIndex() + 1) + '/' + await getLobbyRounds();
-            document.querySelector('#pointsNumber').innerText = points.points;
+            document.querySelector('#pointsNumber').innerText = pointss.points;
             await setRoundAsNotFinished();
             if (await getLobbyTime() !== 0) {
                 timer = startTimer(await getLobbyTime(), document.querySelector('#timeNumber'), async () => {
@@ -182,7 +191,21 @@ async function initMap() {
         // Button
         mapButton = createButton(map, "Guess", async () => {
             if (isGuessable) await setRoundAsFinished(randomLocation.lat, randomLocation.lng, marker.position.lat, marker.position.lng);
+            overlay = document.createElement('div');
+            overlay.id = 'overlay';
+            overlay.style.position = 'absolute';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100%';
+            overlay.style.height = '50px';
+            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            overlay.style.display = 'flex';
+            overlay.style.justifyContent = 'center';
+            overlay.style.alignItems = 'center';
+            overlay.innerHTML = `<p style="margin: 0; color: white;">Guessed, waiting for players</p>`;
+            document.getElementById('map').appendChild(overlay);
             isGuessable = false;
+            mapButton.style.display = "none";
         });
 
         nextButton = createButton(map, "Next", async () => {

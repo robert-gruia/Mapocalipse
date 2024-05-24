@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.contrib.auth import login as auth_login
+from django.contrib.auth import login as auth_login, logout as auth_logout
 from .models import User
 from .utils import hash_password, generateRandomCode
 from django.http import JsonResponse
@@ -48,3 +48,8 @@ def register(request):
 
     else:
         return render(request, 'login.html')
+    
+def logout(request):
+    auth_logout(request)
+    return redirect(reverse('authentication:login'))
+
