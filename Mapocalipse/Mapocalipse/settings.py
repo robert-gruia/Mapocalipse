@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -84,12 +85,12 @@ WSGI_APPLICATION = 'Mapocalipse.wsgi.application'
 DATABASES = {
     'default': {
         #db connection settings
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mapocalipse',
-        'USER': 'root',
-        'PASSWORD' : '',
-        'HOST' : '127.0.0.1',
-        'PORT' : '3306'
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'mapocalipse'),
+        'USER': os.getenv('DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'IyJNUg2MWpBd2QbAnl7Nr5pMfQvP1oh89OFs8hXdHFTefVrJxnNcfKPwwnFmYwnr'),
+        'HOST': os.getenv('DB_HOST', '145.223.118.243'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 

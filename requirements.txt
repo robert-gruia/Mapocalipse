@@ -1,6 +1,0 @@
-Django
-mysqlclient
-geopy
-channels
-uvicorn[standard]
-whitenoise

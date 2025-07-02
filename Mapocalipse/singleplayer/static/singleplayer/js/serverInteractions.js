@@ -20,20 +20,92 @@ const checkExistingCoordinates = async () => {
 }
 
 
-// Generation of valid coordinates
+// --- Weighted world grid for random location selection ---
+const worldGrid = [
+  // Example: 10x5 grid, weights are illustrative. You can refine these for better land/ocean balance.
+  {latMin: -90, latMax: -54, lngMin: -180, lngMax: -108, weight: 0.05}, // South Pacific
+  {latMin: -90, latMax: -54, lngMin: -108, lngMax: -36, weight: 0.05},
+  {latMin: -90, latMax: -54, lngMin: -36, lngMax: 36, weight: 0.05},
+  {latMin: -90, latMax: -54, lngMin: 36, lngMax: 108, weight: 0.05},
+  {latMin: -90, latMax: -54, lngMin: 108, lngMax: 180, weight: 0.05},
+  {latMin: -54, latMax: -18, lngMin: -180, lngMax: -108, weight: 0.1},
+  {latMin: -54, latMax: -18, lngMin: -108, lngMax: -36, weight: 0.1},
+  {latMin: -54, latMax: -18, lngMin: -36, lngMax: 36, weight: 0.2}, // South America, Africa
+  {latMin: -54, latMax: -18, lngMin: 36, lngMax: 108, weight: 0.1},
+  {latMin: -54, latMax: -18, lngMin: 108, lngMax: 180, weight: 0.05},
+  {latMin: -18, latMax: 18, lngMin: -180, lngMax: -108, weight: 0.1},
+  {latMin: -18, latMax: 18, lngMin: -108, lngMax: -36, weight: 0.2}, // Central America
+  {latMin: -18, latMax: 18, lngMin: -36, lngMax: 36, weight: 0.5}, // Africa, Europe, Asia
+  {latMin: -18, latMax: 18, lngMin: 36, lngMax: 108, weight: 0.3}, // India, SE Asia
+  {latMin: -18, latMax: 18, lngMin: 108, lngMax: 180, weight: 0.1},
+  {latMin: 18, latMax: 54, lngMin: -180, lngMax: -108, weight: 0.1},
+  {latMin: 18, latMax: 54, lngMin: -108, lngMax: -36, weight: 0.2}, // North America
+  {latMin: 18, latMax: 54, lngMin: -36, lngMax: 36, weight: 0.4}, // Europe, Asia
+  {latMin: 18, latMax: 54, lngMin: 36, lngMax: 108, weight: 0.3}, // Asia
+  {latMin: 18, latMax: 54, lngMin: 108, lngMax: 180, weight: 0.1},
+  {latMin: 54, latMax: 90, lngMin: -180, lngMax: -108, weight: 0.05},
+  {latMin: 54, latMax: 90, lngMin: -108, lngMax: -36, weight: 0.1},
+  {latMin: 54, latMax: 90, lngMin: -36, lngMax: 36, weight: 0.1},
+  {latMin: 54, latMax: 90, lngMin: 36, lngMax: 108, weight: 0.1},
+  {latMin: 54, latMax: 90, lngMin: 108, lngMax: 180, weight: 0.05},
+];
+
+function weightedRandomCell(grid) {
+  const totalWeight = grid.reduce((sum, cell) => sum + cell.weight, 0);
+  let r = Math.random() * totalWeight;
+  for (const cell of grid) {
+    if (r < cell.weight) return cell;
+    r -= cell.weight;
+  }
+  return grid[grid.length - 1];
+}
+
+function randomPointInCell(cell) {
+  const lat = cell.latMin + Math.random() * (cell.latMax - cell.latMin);
+  const lng = cell.lngMin + Math.random() * (cell.lngMax - cell.lngMin);
+  return { lat, lng };
+}
+
+// Ultra-fast, low-batch, weighted, early-abort coordinate generation (favor land, increase radius, fallback to land-only)
 const generateValidCoordinates = async (svService) => {
   let validCoordinates = [];
-  while (validCoordinates.length < 5) {
-    const promises = Array.from({ length: 20 }, () => new Promise((resolve) => {
-      svService.getPanorama({ location: getRandomArbitrary(), radius: 1000000 }, (data, status) => {
+  let attempts = 0;
+  const batchSize = 10; // Keep batch size low for responsiveness
+  const maxAttempts = 100; // Prevent infinite loops
+  let abort = false;
+  let useLandOnly = false;
+
+  // Favor land even more: use a land-biased cell list 80% of the time, but allow all cells 20% of the time
+  const landCells = worldGrid.filter(cell => cell.weight >= 0.2);
+
+  while (validCoordinates.length < 5 && attempts < maxAttempts && !abort) {
+    // If after 50 attempts not enough found, fallback to land-only
+    if (attempts === 50) useLandOnly = true;
+    const points = Array.from({ length: batchSize }, () => {
+      let cell;
+      if (useLandOnly || Math.random() < 0.8) {
+        cell = landCells[Math.floor(Math.random() * landCells.length)];
+      } else {
+        cell = weightedRandomCell(worldGrid);
+      }
+      return randomPointInCell(cell);
+    });
+    await Promise.all(points.map(point => new Promise((resolve) => {
+      // Increase radius to 100000 for more chance to hit a panorama
+      svService.getPanorama({ location: point, radius: 100000 }, (data, status) => {
         if (status === 'OK' && data.links.length > 2) {
-          validCoordinates.push(data.location.latLng);
+          if (validCoordinates.length < 5) {
+            validCoordinates.push(data.location.latLng);
+            if (validCoordinates.length === 5) {
+              abort = true;
+            }
+          }
         }
         resolve();
+        console.log(`Attempt ${attempts + 1}: Found ${validCoordinates.length} valid coordinates.`);
       });
-    }));
-    await Promise.allSettled(promises);
-    await new Promise(resolve => setTimeout(resolve, 100));
+    })));
+    attempts++;
   }
   return validCoordinates.slice(0, 5);
 };

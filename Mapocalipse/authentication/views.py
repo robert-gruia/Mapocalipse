@@ -25,8 +25,6 @@ def login(request):
         
 def register(request):
     if request.method == 'POST':
-        firstname = request.POST['firstname']
-        lastname = request.POST['lastname']
         username = request.POST['username']
         password = request.POST['password']
         confirmPassword = request.POST['confirmpassword']
@@ -40,7 +38,7 @@ def register(request):
             if not User.objects.filter(usercode=usercode).exists():
                 break
         try:
-            user = User.objects.create_user(username=username, email=email, first_name=firstname, last_name=lastname, password=password, usercode=usercode)
+            user = User.objects.create_user(username=username, email=email, password=password, usercode=usercode)
         except ValueError as ve:
             return JsonResponse({'error': str(ve)})
         auth_login(request, user)
